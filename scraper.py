@@ -1,9 +1,10 @@
 from bs4 import BeautifulSoup
 import requests
-
+############################################ Links
 #Tripadvisor Disney Land Paris
-url="https://www.tripadvisor.fr/Attraction_Review-g226865-d189258-Reviews-Disneyland_Paris-Marne_la_Vallee_Seine_et_Marne_Ile_de_France.html"
-
+#url="https://www.tripadvisor.fr/Attraction_Review-g226865-d189258-Reviews-Disneyland_Paris-Marne_la_Vallee_Seine_et_Marne_Ile_de_France.html"
+#page2
+url="https://www.tripadvisor.fr/Attraction_Review-g226865-d189258-Reviews-or10-Disneyland_Paris-Marne_la_Vallee_Seine_et_Marne_Ile_de_France.html"
 #Parc Walt Disney Studios
 #"https://www.tripadvisor.fr/Attraction_Review-g226865-d285990-Reviews-Walt_Disney_Studios_Park-Marne_la_Vallee_Seine_et_Marne_Ile_de_France.html"
 
@@ -24,7 +25,7 @@ url="https://www.tripadvisor.fr/Attraction_Review-g226865-d189258-Reviews-Disney
 
 #Disney Davy Crockett Ranch
 #"https://www.tripadvisor.fr/Hotel_Review-g1221082-d564634-Reviews-Disney_Davy_Crockett_Ranch-Bailly_Romainvilliers_Seine_et_Marne_Ile_de_France.html"
-
+############################################ Request 
 headers = {
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Methods': 'GET',
@@ -38,16 +39,25 @@ req = requests.get(url,headers=headers,timeout=5)
 
 soup = BeautifulSoup(req.content, 'html.parser')
 #print(soup.title)
-
-#test : Récupérer Titre page :
+############################################ Scraping Result
+#####test : Récupérer Titre page :
 #<h1 class="biGQs _P fiohW eIegw" data-automation="mainH1">Disneyland Paris</h1>
 for x in soup.body.find_all(class_="biGQs _P fiohW eIegw"):
     print(x.text)
-    
-    
+
+
+
+
 #Note - pas un div mais il faut récuperer le aria-label 
 #<svg class="UctUV d H0" viewBox="0 0 128 24" width="88" height="16" aria-label="2,0 sur 5&nbsp;bulles"><path d="M 12 0C5.388 0 0 5.388 0 12s5.388 12 12 12 12-5.38 12-12c0-6.612-5.38-12-12-12z" transform=""></path><path d="M 12 0C5.388 0 0 5.388 0 12s5.388 12 12 12 12-5.38 12-12c0-6.612-5.38-12-12-12z" transform="translate(26 0)"></path><path d="M 12 0C5.388 0 0 5.388 0 12s5.388 12 12 12 12-5.38 12-12c0-6.612-5.38-12-12-12zm0 2a9.983 9.983 0 019.995 10 10 10 0 01-10 10A10 10 0 012 12 10 10 0 0112 2z" transform="translate(52 0)"></path><path d="M 12 0C5.388 0 0 5.388 0 12s5.388 12 12 12 12-5.38 12-12c0-6.612-5.38-12-12-12zm0 2a9.983 9.983 0 019.995 10 10 10 0 01-10 10A10 10 0 012 12 10 10 0 0112 2z" transform="translate(78 0)"></path><path d="M 12 0C5.388 0 0 5.388 0 12s5.388 12 12 12 12-5.38 12-12c0-6.612-5.38-12-12-12zm0 2a9.983 9.983 0 019.995 10 10 10 0 01-10 10A10 10 0 012 12 10 10 0 0112 2z" transform="translate(104 0)"></path></svg>
+print("\n\n Notes \n")
+#i = 0
+#for x in soup.body.find_all(class_="UctUV d H0"):
+#    #print(x.text)
+#    i = i + 1
+#    print(i)
 
+    
 #Pays si renseigné
 #<div class="biGQs _P pZUbB osNWb"><span>Vesoul, France</span><span class="IugUm">1 contribution</span></div>
 print("\n\n PAYS \n")
@@ -80,3 +90,7 @@ for x in soup.body.find_all(class_="biGQs _P pZUbB ncFvv osNWb"):
 
 #Présence de photo: oui/non # test si img dans le div
 #<div class="LblVz _e q"><button class="ajoIU _S B-" aria-label="Voir l'image complète"><picture class="NhWcC _R mdkdE" style="width: 100px; height: 100px;"><img srcset="https://dynamic-media-cdn.tripadvisor.com/media/photo-o/26/cb/4e/96/le-symbole-incontournable.jpg?w=100&amp;h=-1&amp;s=1 1x,https://dynamic-media-cdn.tripadvisor.com/media/photo-o/26/cb/4e/96/le-symbole-incontournable.jpg?w=200&amp;h=200&amp;s=1 2x" src="https://dynamic-media-cdn.tripadvisor.com/media/photo-o/26/cb/4e/96/le-symbole-incontournable.jpg?w=100&amp;h=-1&amp;s=1" width="100" height="134" role="none" alt="" loading="lazy"></picture></button></div>
+print("\n\n Présence de photo \n")
+for x in soup.body.find_all(class_="ajoIU _S B-"):
+    #print(x.text)
+    print("oui")
