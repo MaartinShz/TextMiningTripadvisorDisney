@@ -1,6 +1,6 @@
 from bs4 import BeautifulSoup
 import requests
-import time
+import csv
 
 ############################################ Links
 
@@ -70,9 +70,9 @@ for oneUrl in urls :
 exportAvis = []
 url="/Attraction_Review-g226865-d189258-Reviews-Disneyland_Paris-Marne_la_Vallee_Seine_et_Marne_Ile_de_France.html"
 
-
-while(url is not None): # condition à changer vérifier date du commmentaire récupérer avec la date de commmentaire le plus récent
-
+i = 0
+while(i<100):#url is not None): # condition à changer vérifier date du commmentaire récupérer avec la date de commmentaire le plus récent
+    
     #time.sleep(3)
     req = requests.get("https://www.tripadvisor.fr"+url,headers=headers,timeout=5)
     #print (req.status_code) # 200 -> OK
@@ -81,7 +81,7 @@ while(url is not None): # condition à changer vérifier date du commmentaire r�
     
     #########################  Scrapping Avis
     for avis in blocAvis.findAll(attrs={"class" : "_c"}):
-        
+        i = i + 1
         pays = avis.find(class_="biGQs _P pZUbB osNWb").text #PAYS  attention champs à vérifier
         
         titre = avis.find(class_="biGQs _P fiohW qWPrE ncFvv fOtGX").text #titre commentaire
@@ -113,10 +113,11 @@ while(url is not None): # condition à changer vérifier date du commmentaire r�
             photo = False
             
         ### Enregistrement des données scrapper
-        #"pays", "titre", "note", "commentaire", "dateSejour", "situation", "dateCommentaire", "photo"
+        nomColonnes = ["pays", "titre", "note", "commentaire", "dateSejour", "situation", "dateCommentaire", "photo"]
         print([pays, titre, note, commentaire, dateSejour, situation, dateCommentaire, photo])
         exportAvis.append([pays, titre, note, commentaire, dateSejour, situation, dateCommentaire, photo])
-
+        
+        print(i)
     #########################
     try:
         url = blocAvis.find(class_="xkSty").find(class_="BrOJk u j z _F wSSLS tIqAi unMkR")["href"]
@@ -124,3 +125,9 @@ while(url is not None): # condition à changer vérifier date du commmentaire r�
         url = None
 
 ############################################
+with open('exportAvis.csv', 'w') as f:
+      
+    # using csv.writer method from CSV package
+    write = csv.writer(f)
+    write.writerow(nomColonnes)
+    write.writerows(exportAvis)
