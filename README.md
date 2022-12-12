@@ -15,6 +15,9 @@ Selenium
 
 Données Stockage :
 Dans bdd -> Pas essayé
+Oracle ou Mysql
+-Creer le modèle de données
+-Exporter les données format CSV
 
 Type d'analyse :
 WordCloud
@@ -23,4 +26,5 @@ Analyser thèmes principaux
 
 
 App présentation résultat -> Streamlit
+-Creer  un bouton pour recharger les données
 
