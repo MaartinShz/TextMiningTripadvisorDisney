@@ -1,5 +1,6 @@
 from bs4 import BeautifulSoup
 import requests
+import time
 
 ############################################ Links
 
@@ -66,17 +67,16 @@ for oneUrl in urls :
 
 
 ############################################ Scraping Result
-
+exportAvis = []
 url="/Attraction_Review-g226865-d189258-Reviews-Disneyland_Paris-Marne_la_Vallee_Seine_et_Marne_Ile_de_France.html"
 
-tripadvisor= "https://www.tripadvisor.fr"
 
-while(url is not None):
+while(url is not None): # condition à changer vérifier date du commmentaire récupérer avec la date de commmentaire le plus récent
 
-    req = requests.get(tripadvisor+url,headers=headers,timeout=5)
+    #time.sleep(3)
+    req = requests.get("https://www.tripadvisor.fr"+url,headers=headers,timeout=5)
     #print (req.status_code) # 200 -> OK
-    soup = BeautifulSoup(req.content, 'html.parser')
-    
+    soup = BeautifulSoup(req.content, 'html.parser')  
     blocAvis = soup.find(attrs={"class" : "LbPSX"})
     
     #########################  Scrapping Avis
@@ -93,23 +93,34 @@ while(url is not None):
         dateSejour = avis.find(class_="RpeCd")#.text #date du séjour
         if(dateSejour is not None):
             sep= dateSejour.text.find("•")-1
-            situation = dateSejour.text[sep+2:] # avoir si utile dans analyse
-            dateSejour = dateSejour.text[:sep]
+            
+            if(sep >0):
+                situation = dateSejour.text[sep+2:] # avoir si utile dans analyse
+                dateSejour = dateSejour.text[:sep]
+            else:
+                dateSejour = dateSejour.text
+                situation = None
         else:
             dateSejour = None
+            situation = None
         
         dateCommentaire = avis.find(class_="biGQs _P pZUbB ncFvv osNWb").text #date du commentaire
         
         photo = avis.find(class_="ajoIU _S B-") #Présence de photo: oui/non
         if(photo is not None):
-            photo = "Oui"
+            photo = True
         else:
-            photo = None
+            photo = False
+            
+        ### Enregistrement des données scrapper
+        #"pays", "titre", "note", "commentaire", "dateSejour", "situation", "dateCommentaire", "photo"
+        print([pays, titre, note, commentaire, dateSejour, situation, dateCommentaire, photo])
+        exportAvis.append([pays, titre, note, commentaire, dateSejour, situation, dateCommentaire, photo])
+
     #########################
-        
     try:
         url = blocAvis.find(class_="xkSty").find(class_="BrOJk u j z _F wSSLS tIqAi unMkR")["href"]
-        
     except:
         url = None
+
 ############################################
