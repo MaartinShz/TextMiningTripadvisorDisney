@@ -45,9 +45,11 @@ headers = {
 
 
 
-urls=["https://www.tripadvisor.fr/Attraction_Review-g226865-d189258-Reviews-Disneyland_Paris-Marne_la_Vallee_Seine_et_Marne_Ile_de_France.html",
-    "https://www.tripadvisor.fr/Attraction_Review-g226865-d285990-Reviews-Walt_Disney_Studios_Park-Marne_la_Vallee_Seine_et_Marne_Ile_de_France.html",
-    "https://www.tripadvisor.fr/Hotel_Review-g1182377-d262678-Reviews-Disney_Hotel_New_York_The_Art_of_Marvel-Chessy_Marne_la_Vallee_Seine_et_Marne_Ile_de_F.html",
+urlsParc=["https://www.tripadvisor.fr/Attraction_Review-g226865-d189258-Reviews-Disneyland_Paris-Marne_la_Vallee_Seine_et_Marne_Ile_de_France.html",
+    "https://www.tripadvisor.fr/Attraction_Review-g226865-d285990-Reviews-Walt_Disney_Studios_Park-Marne_la_Vallee_Seine_et_Marne_Ile_de_France.html"
+    ]
+
+urlHotel=["https://www.tripadvisor.fr/Hotel_Review-g1182377-d262678-Reviews-Disney_Hotel_New_York_The_Art_of_Marvel-Chessy_Marne_la_Vallee_Seine_et_Marne_Ile_de_F.html",
     "https://www.tripadvisor.fr/Hotel_Review-g1182377-d262679-Reviews-Disney_Newport_Bay_Club-Chessy_Marne_la_Vallee_Seine_et_Marne_Ile_de_France.html",
     "https://www.tripadvisor.fr/Hotel_Review-g5599092-d262682-Reviews-Disney_Sequoia_Lodge-Coupvray_Seine_et_Marne_Ile_de_France.html",
     "https://www.tripadvisor.fr/Hotel_Review-g226865-d262686-Reviews-Disney_Hotel_Cheyenne-Marne_la_Vallee_Seine_et_Marne_Ile_de_France.html",
@@ -68,13 +70,13 @@ for oneUrl in urls :
 
 ############################################ Scraping Result
 exportAvis = []
-url="/Attraction_Review-g226865-d189258-Reviews-Disneyland_Paris-Marne_la_Vallee_Seine_et_Marne_Ile_de_France.html"
+url="https://www.tripadvisor.fr/Attraction_Review-g226865-d285990-Reviews-Walt_Disney_Studios_Park-Marne_la_Vallee_Seine_et_Marne_Ile_de_France.html"
 
 i = 0
 while(i<100):#url is not None): # condition à changer vérifier date du commmentaire récupérer avec la date de commmentaire le plus récent
     
     #time.sleep(3)
-    req = requests.get("https://www.tripadvisor.fr"+url,headers=headers,timeout=5)
+    req = requests.get(url,headers=headers,timeout=5)
     #print (req.status_code) # 200 -> OK
     soup = BeautifulSoup(req.content, 'html.parser')  
     blocAvis = soup.find(attrs={"class" : "LbPSX"})
@@ -99,10 +101,10 @@ while(i<100):#url is not None): # condition à changer vérifier date du commmen
                 dateSejour = dateSejour.text[:sep]
             else:
                 dateSejour = dateSejour.text
-                situation = None
+                situation = ""
         else:
-            dateSejour = None
-            situation = None
+            dateSejour = ""
+            situation = ""
         
         dateCommentaire = avis.find(class_="biGQs _P pZUbB ncFvv osNWb").text #date du commentaire
         
@@ -115,18 +117,18 @@ while(i<100):#url is not None): # condition à changer vérifier date du commmen
         ### Enregistrement des données scrapper
         nomColonnes = ["pays", "titre", "note", "commentaire", "dateSejour", "situation", "dateCommentaire", "photo"]
         print([pays, titre, note, commentaire, dateSejour, situation, dateCommentaire, photo])
-        exportAvis.append([pays, titre, note, commentaire, dateSejour, situation, dateCommentaire, photo])
+        exportAvis.append([pays.replace(",",""), titre.replace(",",""), note, commentaire.replace(",",""), dateSejour, situation, dateCommentaire, photo])
         
         print(i)
     #########################
     try:
-        url = blocAvis.find(class_="xkSty").find(class_="BrOJk u j z _F wSSLS tIqAi unMkR")["href"]
+        url = "https://www.tripadvisor.fr"+blocAvis.find(class_="xkSty").find(class_="BrOJk u j z _F wSSLS tIqAi unMkR")["href"]
     except:
         url = None
 
 ############################################
-with open('exportAvis.csv', 'w') as f:
-      
+
+with open('exportAvisParcWaltDisney.csv', 'w', encoding='utf-8') as f:
     # using csv.writer method from CSV package
     write = csv.writer(f)
     write.writerow(nomColonnes)
