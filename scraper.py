@@ -67,69 +67,107 @@ for oneUrl in urls :
             print(x.text)
 """
 
-
-############################################ Scraping Result
 exportAvis = []
-url="https://www.tripadvisor.fr/Attraction_Review-g226865-d285990-Reviews-Walt_Disney_Studios_Park-Marne_la_Vallee_Seine_et_Marne_Ile_de_France.html"
-
+url="https://www.tripadvisor.fr/Hotel_Review-g1182377-d262678-Reviews-Disney_Hotel_New_York_The_Art_of_Marvel-Chessy_Marne_la_Vallee_Seine_et_Marne_Ile_de_F.html"
 i = 0
-while(i<100):#url is not None): # condition à changer vérifier date du commmentaire récupérer avec la date de commmentaire le plus récent
+############################################ Scraping Result For Parks
+def scrapParc(url):
+    i=0
     
-    #time.sleep(3)
-    req = requests.get(url,headers=headers,timeout=5)
-    #print (req.status_code) # 200 -> OK
-    soup = BeautifulSoup(req.content, 'html.parser')  
-    blocAvis = soup.find(attrs={"class" : "LbPSX"})
-    
-    #########################  Scrapping Avis
-    for avis in blocAvis.findAll(attrs={"class" : "_c"}):
-        i = i + 1
-        pays = avis.find(class_="biGQs _P pZUbB osNWb").text #PAYS  attention champs à vérifier
+    while(i<100):#url is not None): # condition à changer vérifier date du commmentaire récupérer avec la date de commmentaire le plus récent  
+        #time.sleep(3)
+        req = requests.get(url,headers=headers,timeout=5)
+        #print (req.status_code) # 200 -> OK
+        soup = BeautifulSoup(req.content, 'html.parser')  
+        blocAvis = soup.find(attrs={"class" : "LbPSX"})
         
-        titre = avis.find(class_="biGQs _P fiohW qWPrE ncFvv fOtGX").text #titre commentaire
-        
-        note = int(avis.find(class_="UctUV d H0")["aria-label"][0]) #note commentaire
-        
-        commentaire = avis.find(class_="yCeTE").text #corps du commentaire
-        
-        dateSejour = avis.find(class_="RpeCd")#.text #date du séjour
-        if(dateSejour is not None):
-            sep= dateSejour.text.find("•")-1
+        #########################  Scrapping Avis
+        for avis in blocAvis.findAll(attrs={"class" : "_c"}):
+            i = i + 1
+            pays = avis.find(class_="biGQs _P pZUbB osNWb").text #PAYS  attention champs à vérifier
             
-            if(sep >0):
-                situation = dateSejour.text[sep+2:] # avoir si utile dans analyse
-                dateSejour = dateSejour.text[:sep]
+            titre = avis.find(class_="biGQs _P fiohW qWPrE ncFvv fOtGX").text #titre commentaire
+            
+            note = int(avis.find(class_="UctUV d H0")["aria-label"][0]) #note commentaire
+            
+            commentaire = avis.find(class_="yCeTE").text #corps du commentaire
+            
+            dateSejour = avis.find(class_="RpeCd")#.text #date du séjour
+            if(dateSejour is not None):
+                sep= dateSejour.text.find("•")-1
+                
+                if(sep >0):
+                    situation = dateSejour.text[sep+2:] # avoir si utile dans analyse
+                    dateSejour = dateSejour.text[:sep]
+                else:
+                    dateSejour = dateSejour.text
+                    situation = ""
             else:
-                dateSejour = dateSejour.text
+                dateSejour = ""
                 situation = ""
-        else:
-            dateSejour = ""
-            situation = ""
-        
-        dateCommentaire = avis.find(class_="biGQs _P pZUbB ncFvv osNWb").text #date du commentaire
-        
-        photo = avis.find(class_="ajoIU _S B-") #Présence de photo: oui/non
-        if(photo is not None):
-            photo = True
-        else:
-            photo = False
             
-        ### Enregistrement des données scrapper
-        nomColonnes = ["pays", "titre", "note", "commentaire", "dateSejour", "situation", "dateCommentaire", "photo"]
-        print([pays, titre, note, commentaire, dateSejour, situation, dateCommentaire, photo])
-        exportAvis.append([pays.replace(",",""), titre.replace(",",""), note, commentaire.replace(",",""), dateSejour, situation, dateCommentaire, photo])
-        
-        print(i)
-    #########################
-    try:
-        url = "https://www.tripadvisor.fr"+blocAvis.find(class_="xkSty").find(class_="BrOJk u j z _F wSSLS tIqAi unMkR")["href"]
-    except:
-        url = None
+            dateCommentaire = avis.find(class_="biGQs _P pZUbB ncFvv osNWb").text #date du commentaire
+            
+            photo = avis.find(class_="ajoIU _S B-") #Présence de photo: oui/non
+            if(photo is not None):
+                photo = True
+            else:
+                photo = False
+                
+            ### Enregistrement des données scrapper
+            nomColonnes = ["pays", "titre", "note", "commentaire", "dateSejour", "situation", "dateCommentaire", "photo"]
+            print([pays, titre, note, commentaire, dateSejour, situation, dateCommentaire, photo])
+            exportAvis.append([pays.replace(",",""), titre.replace(",",""), note, commentaire.replace(",",""), dateSejour, situation, dateCommentaire, photo])
+            
+            print(i)
+        #########################
+        try:
+            url = "https://www.tripadvisor.fr"+blocAvis.find(class_="xkSty").find(class_="BrOJk u j z _F wSSLS tIqAi unMkR")["href"]
+        except:
+            url = None
 
+############################################ Export result
+
+# with open('exportAvisParcWaltDisney.csv', 'w', encoding='utf-8') as f:
+#     # using csv.writer method from CSV package
+#     write = csv.writer(f)
+#     write.writerow(nomColonnes)
+#     write.writerows(exportAvis)
 ############################################
 
-with open('exportAvisParcWaltDisney.csv', 'w', encoding='utf-8') as f:
-    # using csv.writer method from CSV package
-    write = csv.writer(f)
-    write.writerow(nomColonnes)
-    write.writerows(exportAvis)
+
+############################################ Scraping Result For Hotel
+req = requests.get(url,headers=headers,timeout=5)
+soup = BeautifulSoup(req.content, 'html.parser')
+blocAvis = soup.find(attrs={"data-test-target" : "reviews-tab"})
+
+for avis in blocAvis.findAll(attrs={"class" : "YibKl MC R2 Gi z Z BB pBbQr"}):
+      
+    pays = avis.find(class_="default LXUOn small").text #PAYS  attention champs à vérifier
+            
+    titre = avis.find(class_="KgQgP MC _S b S6 H5 _a").text #titre commentaire
+    
+    #note = int(avis.find(class_="UctUV d H0")["aria-label"][0]) #note commentaire
+    
+    commentaire = avis.find(class_="fIrGe _T").text #corps du commentaire
+    
+    dateSejour = avis.find(class_="teHYY _R Me S4 H3")#.text #date du séjour
+    #situation =
+    
+    dateCommentaire = avis.find(class_="ui_header_link uyyBf").text #date du commentaire
+    
+    photo = avis.find(class_="_Q t _U s l KSVvt") #Présence de photo: oui/non
+    if(photo is not None):
+        photo = True
+    else:
+        photo = False
+        
+    print([pays, titre, note, commentaire, dateSejour, situation, dateCommentaire, photo])
+    
+    print(i)
+    i = i + 1
+
+#print(blocAvis)
+
+
+
