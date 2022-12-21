@@ -18,6 +18,7 @@ Dans bdd -> Pas essayé
 Oracle ou Mysql
 -Creer le modèle de données
 -Exporter les données format CSV
+-Connexion entre python et la BDD pour stocker directement les données sans passer par un csv
 
 Type d'analyse :
 WordCloud
