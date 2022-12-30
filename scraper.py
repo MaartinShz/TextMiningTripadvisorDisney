@@ -84,7 +84,7 @@ def scrapParc(url, export=False):
             url = None
         ############################################ Export result
         if(export):
-            with open('exportAvisParc'+ soup.title.text.replace(" ","").replace(":","") +'.csv', 'w', encoding='utf-8') as f: 
+            with open('exportAvisParc'+ soup.title.text.replace(" ","").replace(":","") +'.csv', 'w', encoding='utf-8', newline='') as f: 
                 write = csv.writer(f)
                 write.writerow(nomColonnes)
                 write.writerows(exportAvis)
@@ -96,7 +96,7 @@ def scrapParc(url, export=False):
 ############################################ Scraping Result For Hotel
 def scrapHotel(url, export = False):
     i=0  #compteur d'avis
-    while(i<20):
+    while(i<215):
         req = requests.get(url,headers=headers,timeout=5)
         soup = BeautifulSoup(req.content, 'html.parser')
         
@@ -119,7 +119,7 @@ def scrapHotel(url, export = False):
             
             #date du séjour # separer date
             if(avis.find(class_="teHYY _R Me S4 H3") is not None):
-                dateSejour = avis.find(class_="teHYY _R Me S4 H3").text
+                dateSejour = avis.find(class_="teHYY _R Me S4 H3").text[17:]
             else:
                 dateSejour = ""
             
@@ -138,22 +138,24 @@ def scrapHotel(url, export = False):
                 
             nomColonnes = ["pays", "titre", "note", "commentaire", "dateSejour", "situation", "dateCommentaire", "photo"]
             exportAvis.append([pays.replace(",",""), titre.replace(",",""), note, commentaire.replace(",",""), dateSejour, situation, dateCommentaire, photo])
-            print([pays, titre, note, commentaire, dateSejour, situation, dateCommentaire, photo])
+            #print([pays, titre, note, commentaire, dateSejour, situation, dateCommentaire, photo])
+            print(situation)
             print(i)
             
         try:
             url = "https://www.tripadvisor.fr"+blocAvis.find(class_="ui_button nav next primary")["href"]
         except:
             url = None
-        print('exportAvisHotel_'+ soup.title.text.replace(" ","") +'.csv')
+
         ############################################ Export result
         if(export):
-            with open('exportAvisHotel_'+ soup.title.text.replace(" ","").replace(":","") +'.csv', 'w', encoding='utf-8') as f: 
+            with open('exportAvisHotel_'+ soup.title.text.replace(" ","").replace(":","") +'.csv', 'w', encoding='utf-8', newline='') as f: 
                 write = csv.writer(f)
                 write.writerow(nomColonnes)
                 write.writerows(exportAvis)
         ###########################################
-
+#url="https://www.tripadvisor.fr/Attraction_Review-g226865-d189258-Reviews-Disneyland_Paris-Marne_la_Vallee_Seine_et_Marne_Ile_de_France.html"
+#scrapParc(url, True)
 url="https://www.tripadvisor.fr/Hotel_Review-g1182377-d262678-Reviews-Disney_Hotel_New_York_The_Art_of_Marvel-Chessy_Marne_la_Vallee_Seine_et_Marne_Ile_de_F.html"
 scrapHotel(url, True)
 
