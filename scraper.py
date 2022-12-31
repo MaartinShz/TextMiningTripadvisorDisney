@@ -32,7 +32,7 @@ exportAvis = []
 ############################################ Scraping Result For Parks
 def scrapParc(url, export=False):
     i=0#compteur d'avis
-    while(i<20):#url is not None): # condition à changer vérifier date du commmentaire récupérer avec la date de commmentaire le plus récent  
+    while(i<450):#url is not None): # condition à changer vérifier date du commmentaire récupérer avec la date de commmentaire le plus récent  
         #time.sleep(3)
         req = requests.get(url,headers=headers,timeout=5)
         #print (req.status_code) # 200 -> OK
@@ -64,7 +64,7 @@ def scrapParc(url, export=False):
                 dateSejour = ""
                 situation = ""
             
-            dateCommentaire = avis.find(class_="biGQs _P pZUbB ncFvv osNWb").text #date du commentaire
+            dateCommentaire = avis.find(class_="biGQs _P pZUbB ncFvv osNWb").text[avis.find(class_="biGQs _P pZUbB ncFvv osNWb").text.find(" ",9)+1:] #date du commentaire
             
             photo = avis.find(class_="ajoIU _S B-") #Présence de photo: oui/non
             if(photo is not None):
@@ -75,7 +75,8 @@ def scrapParc(url, export=False):
             ### Enregistrement des données scrapper
             nomColonnes = ["pays", "titre", "note", "commentaire", "dateSejour", "situation", "dateCommentaire", "photo"]
             exportAvis.append([pays.replace(",",""), titre.replace(",",""), note, commentaire.replace(",",""), dateSejour, situation, dateCommentaire, photo])
-            print([pays, titre, note, commentaire, dateSejour, situation, dateCommentaire, photo])
+            #print([pays, titre, note, commentaire, dateSejour, situation, dateCommentaire, photo])
+            print(dateCommentaire)
             print(i)
         ######################### next Page
         try:
@@ -96,7 +97,7 @@ def scrapParc(url, export=False):
 ############################################ Scraping Result For Hotel
 def scrapHotel(url, export = False):
     i=0  #compteur d'avis
-    while(i<215):
+    while(i<100):
         req = requests.get(url,headers=headers,timeout=5)
         soup = BeautifulSoup(req.content, 'html.parser')
         
@@ -128,7 +129,7 @@ def scrapHotel(url, export = False):
             else:
                 situation = ""
             
-            dateCommentaire = avis.find(class_="cRVSd").text #date du commentaire # verif mois et année
+            dateCommentaire = avis.find(class_="cRVSd").text#date du commentaire # verif mois et année
             
             photo = avis.find(class_="pDrIj f z") #Présence de photo: oui/non 
             if(photo is not None):
@@ -139,7 +140,7 @@ def scrapHotel(url, export = False):
             nomColonnes = ["pays", "titre", "note", "commentaire", "dateSejour", "situation", "dateCommentaire", "photo"]
             exportAvis.append([pays.replace(",",""), titre.replace(",",""), note, commentaire.replace(",",""), dateSejour, situation, dateCommentaire, photo])
             #print([pays, titre, note, commentaire, dateSejour, situation, dateCommentaire, photo])
-            print(situation)
+            #print(dateCommentaire)
             print(i)
             
         try:
@@ -154,8 +155,8 @@ def scrapHotel(url, export = False):
                 write.writerow(nomColonnes)
                 write.writerows(exportAvis)
         ###########################################
-#url="https://www.tripadvisor.fr/Attraction_Review-g226865-d189258-Reviews-Disneyland_Paris-Marne_la_Vallee_Seine_et_Marne_Ile_de_France.html"
-#scrapParc(url, True)
-url="https://www.tripadvisor.fr/Hotel_Review-g1182377-d262678-Reviews-Disney_Hotel_New_York_The_Art_of_Marvel-Chessy_Marne_la_Vallee_Seine_et_Marne_Ile_de_F.html"
-scrapHotel(url, True)
+url="https://www.tripadvisor.fr/Attraction_Review-g226865-d189258-Reviews-Disneyland_Paris-Marne_la_Vallee_Seine_et_Marne_Ile_de_France.html"
+scrapParc(url, True)
+#url="https://www.tripadvisor.fr/Hotel_Review-g1182377-d262678-Reviews-Disney_Hotel_New_York_The_Art_of_Marvel-Chessy_Marne_la_Vallee_Seine_et_Marne_Ile_de_F.html"
+#scrapHotel(url, True)
 
