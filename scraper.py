@@ -48,7 +48,7 @@ def scrapParc(url, export=False):
             
             note = int(avis.find(class_="UctUV d H0")["aria-label"][0]) #note commentaire
             
-            commentaire = avis.find(class_="yCeTE").text #corps du commentaire
+            commentaire = avis.find(attrs={'class':'biGQs _P pZUbB KxBGd'}).text #corps du commentaire
             
             dateSejour = avis.find(class_="RpeCd")#.text #date du séjour
             if(dateSejour is not None):
