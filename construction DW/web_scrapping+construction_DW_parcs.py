@@ -138,7 +138,7 @@ cursor = con.cursor()
 # In[111]:
 
 
-con.close()
+#con.close()
 
 
 # # Construction DW pour les parcs
@@ -231,8 +231,8 @@ liste_local_dw
 
 os.chdir("/Users/dangnguyenviet/Desktop/Master 2 SISE/cours/M2 SISE - Text mining/projet Disney Land")
 parc = pd.read_table("parc.csv",sep=";",header=0)
+parc.drop_duplicates(keep='first',inplace=True)
 parc.info()
-
 
 # In[35]:
 
@@ -294,7 +294,8 @@ if (len(df_local_new) != 0):
     for line in data_loca_new:
         cursor.execute(s_loca, line)
     con.commit()
-
+else:
+    print("Il n'y a pas de nouvelle localisation")
 
 # In[50]:
 
