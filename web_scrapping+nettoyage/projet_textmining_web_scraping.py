@@ -77,7 +77,7 @@ def scrapHotel(url):
     localisation = []   
  
     i=0  #compteur d'avis
-    while(i<50):
+    while(i<10):
         req = requests.get(url,headers=headers,timeout=5)
         soup = BeautifulSoup(req.content, 'html.parser')
         
@@ -162,7 +162,7 @@ def scrapParc(url):
     usersituation = []
     
     i=0#compteur d'avis
-    while(i<50):#url is not None): # condition à changer vérifier date du commmentaire récupérer avec la date de commmentaire le plus récent  
+    while(i<10):#url is not None): # condition à changer vérifier date du commmentaire récupérer avec la date de commmentaire le plus récent  
         #time.sleep(3)
         req = requests.get(url,headers=headers,timeout=5)
         #print (req.status_code) # 200 -> OK
