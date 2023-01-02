@@ -65,7 +65,7 @@ exportAvis = []
 
 
 def scrapHotel(url):
-    dict_mois = {'janv.':'janvier', 'février':'fevrier', 'fev.':'fevrier', 'avr.':'avril', 
+    dict_mois = {'janv.':'janvier', 'février':'fevrier', 'févr.':'fevrier', 'avr.':'avril', 
                  'juil.':'juillet', 'août':'aout', 'sept.':'septembre','oct.':'octobre', 
                  'nov.':'novembre', 'déc.':'decembre','décembre':'decembre', 'Dec':'decembre'}
    
@@ -149,7 +149,7 @@ hotel.info()
 
 def scrapParc(url):
     
-    dict_mois = {'janv.':'janvier', 'février':'fevrier', 'fev.':'fevrier', 'avr.':'avril', 
+    dict_mois = {'janv.':'janvier', 'février':'fevrier', 'févr.':'fevrier', 'avr.':'avril', 
                  'juil.':'juillet', 'août':'aout', 'sept.':'septembre','oct.':'octobre', 
                  'nov.':'novembre', 'déc.':'decembre','décembre':'decembre', 'Dec':'decembre'}
    
