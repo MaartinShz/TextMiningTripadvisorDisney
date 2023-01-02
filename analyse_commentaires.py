@@ -76,9 +76,9 @@ lem = WordNetLemmatizer()
 mots_vides = stopwords.words("french")
 
 # on ajoute qlq mots vides:
-liste_mots_vides = ["disneyland","disney land","disney","parc","très","trop","séjour","hôtel",
-                   "lhotel","l'hôtel","chambre","chambres","c'est","cest","c'était","ça","cela",
-                   "avant","après","n'est","n'était","déjà","donc","alors"]
+liste_mots_vides = ["disneyland","disney land","disney","parc","parcs","très","trop","séjour","hôtel","hotel",
+                   "lhotel","lhôtel","l'hôtel","chambre","chambres","c'est","cest","c'était","ça","cela",
+                   "avant","après","n'est","n'était","déjà","donc","alors","a","cet"]
 
 for i in liste_mots_vides:
     mots_vides.append(i)
