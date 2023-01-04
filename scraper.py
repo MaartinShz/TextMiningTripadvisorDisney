@@ -48,7 +48,7 @@ def scrapParc(url, export=False):
             
             note = int(avis.find(class_="UctUV d H0")["aria-label"][0]) #note commentaire
             
-            commentaire = avis.find(attrs={'class':'biGQs _P pZUbB KxBGd'}).text #corps du commentaire
+            commentaire = avis.find(class_="yCeTE").text #corps du commentaire
             
             dateSejour = avis.find(class_="RpeCd")#.text #date du séjour
             if(dateSejour is not None):
@@ -125,7 +125,7 @@ def scrapHotel(url, export = False):
                 dateSejour = ""
             
             if(avis.find(class_="TDKzw _R Me") is not None):
-                situation = avis.find(class_="TDKzw _R Me").text
+                situation = avis.find(class_="TDKzw _R Me").text[26:]
             else:
                 situation = ""
             
@@ -140,7 +140,7 @@ def scrapHotel(url, export = False):
             nomColonnes = ["pays", "titre", "note", "commentaire", "dateSejour", "situation", "dateCommentaire", "photo"]
             exportAvis.append([pays.replace(",",""), titre.replace(",",""), note, commentaire.replace(",",""), dateSejour, situation, dateCommentaire, photo])
             #print([pays, titre, note, commentaire, dateSejour, situation, dateCommentaire, photo])
-            #print(dateCommentaire)
+            print(situation)
             print(i)
             
         try:
@@ -155,8 +155,8 @@ def scrapHotel(url, export = False):
                 write.writerow(nomColonnes)
                 write.writerows(exportAvis)
         ###########################################
-url="https://www.tripadvisor.fr/Attraction_Review-g226865-d189258-Reviews-Disneyland_Paris-Marne_la_Vallee_Seine_et_Marne_Ile_de_France.html"
-scrapParc(url, True)
-#url="https://www.tripadvisor.fr/Hotel_Review-g1182377-d262678-Reviews-Disney_Hotel_New_York_The_Art_of_Marvel-Chessy_Marne_la_Vallee_Seine_et_Marne_Ile_de_F.html"
-#scrapHotel(url, True)
+#url="https://www.tripadvisor.fr/Attraction_Review-g226865-d189258-Reviews-Disneyland_Paris-Marne_la_Vallee_Seine_et_Marne_Ile_de_France.html"
+#scrapParc(url, True)
+url="https://www.tripadvisor.fr/Hotel_Review-g1182377-d262678-Reviews-Disney_Hotel_New_York_The_Art_of_Marvel-Chessy_Marne_la_Vallee_Seine_et_Marne_Ile_de_F.html"
+scrapHotel(url, True)
 
