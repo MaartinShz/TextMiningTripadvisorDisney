@@ -19,6 +19,8 @@ import string
 from my_functions import my_corpora_2_vec
 from my_functions import nettoyage_corpus
 from my_functions import my_cah_from_doc2vec
+from my_functions import matrice_lien
+from my_functions import my_dendogram
 from nltk.stem import WordNetLemmatizer
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
@@ -59,7 +61,7 @@ query_commentaire_hotel = """SELECT*
            """
 commentaire_hotel = pd.read_sql(query_commentaire_hotel, con=con)
 st.write(commentaire_hotel)
-
+#st.button("Re-run")
 
 # In[14]:
 
@@ -87,16 +89,27 @@ corpus_liste_hotel = nettoyage_corpus(corpus_original_hotel)
 modele_hotel = Word2Vec(corpus_liste_hotel,vector_size=1000,window=3,min_count=2,epochs=100)
 words_hotel = modele_hotel.wv
 
+st.markdown("## la matrice des liens")
+#la matrice des liens
+Z_hotel = matrice_lien(corpus_liste_hotel,words_hotel)
+#st.button("Re-run")
 
-# CAH
+# In[39]:
 
-# In[17]:
+st.markdown("## le dendrogramme")
+#afficher le dendrogramme
+my_dendogram(Z_hotel)
+#st.button("Re-run")
 
+# In[78]:
 
-#A partir de la matrice de description des documents, réaliser une CAH (critère de Ward) 
-#et afficher le dendrogramme
+st.markdown("## critère de Ward")
 
-g2,mat2 = my_cah_from_doc2vec(corpus_liste_hotel,words_hotel,seuil=100)
+#CAH (critère de Ward) 
+
+cah_hotel = my_cah_from_doc2vec(corpus_liste_hotel,Z_hotel)
+
+#st.button("Re-run")
 
 
 # Word Cloud
@@ -152,6 +165,8 @@ plt.axis("off")
 plt.tight_layout(pad = 0)
 st.set_option('deprecation.showPyplotGlobalUse', False)
 st.pyplot()
+
+st.button("Re-run")
 # Display the plot
 con.close()
 

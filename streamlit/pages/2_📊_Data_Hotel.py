@@ -19,7 +19,7 @@ from bs4 import BeautifulSoup
 
 st.set_page_config(page_title="Chargement des données", page_icon="📈")
 
-st.markdown("# Chargement des données")
+st.markdown("# Mise à jour du datawerhouse")
 st.sidebar.header("Chargement des données")
 st.write(
     """Ici, nous pouvons mettre à jour les commentaires des internautes sur les hotels de DisneyLand"""
