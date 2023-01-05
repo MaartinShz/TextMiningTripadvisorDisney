@@ -28,7 +28,7 @@ dict_mois = {'janv.':'janvier', 'février':'fevrier', 'fev.':'fevrier', 'avr.':'
 
 
 
-async def scrap(url:str):
+def scrap(url:str):
     
     titres = []
     req = requests.get(url,headers=headers,timeout=5)
@@ -101,7 +101,7 @@ test = {"1" : {"Auteur":"Benoit6287",
 
 i = 1
 
-def check_comments_exists(titres:list):
+async def check_comments_exists(titres:list):
 
     dsnStr = oracledb.makedsn("db-etu.univ-lyon2.fr", "1521", "DBETU")
 
@@ -121,6 +121,7 @@ def check_comments_exists(titres:list):
             print(f'yes\t{titre}')
         else:
             print(f'no\t{titre}')
+    
 
 
 
@@ -133,8 +134,9 @@ def check_comments_exists(titres:list):
 
 
 async def main():
-    result = await scrap("https://www.tripadvisor.fr/Hotel_Review-g1182377-d262678-Reviews-Disney_Hotel_New_York_The_Art_of_Marvel-Chessy_Marne_la_Vallee_Seine_et_Marne_Ile_de_F.html")
-    check_comments_exists(result)
+    while(True):
+        result = scrap("https://www.tripadvisor.fr/Hotel_Review-g1182377-d262678-Reviews-Disney_Hotel_New_York_The_Art_of_Marvel-Chessy_Marne_la_Vallee_Seine_et_Marne_Ile_de_F.html")
+        await check_comments_exists(result)
 
 
 asyncio.run(main())
