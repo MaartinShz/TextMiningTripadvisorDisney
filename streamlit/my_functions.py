@@ -5,6 +5,7 @@ Created on Wed Jan  4 15:16:57 2023
 @author: USER
 """
 import pandas as pd
+import streamlit as st
 import altair as alt
 from urllib.error import URLError
 import pandas as pd
@@ -167,9 +168,9 @@ def matrice_lien(corpus,trained):
 #dendrogramme avec le seuil
 def my_dendogram(matrice,seuil=100):
     
-    plt.title("CAH")
+    #st.write("CAH")
     dendrogram(matrice,orientation='left',color_threshold=seuil)
-    plt.show()
+    st.pyplot()
 
 
 # In[77]:

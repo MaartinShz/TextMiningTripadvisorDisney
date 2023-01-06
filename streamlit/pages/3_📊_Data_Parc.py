@@ -16,26 +16,19 @@ import re
 from unidecode import unidecode
 import requests
 from bs4 import BeautifulSoup
+from connexion_Oracle import connect_to_database
+st.set_page_config(page_title="Updating the data warehouse", page_icon="📈")
 
-st.set_page_config(page_title="Chargement des données", page_icon="📈")
-
-st.markdown("# Mise à jour du datawerhouse")
-st.sidebar.header("Mise à jour du datawerhouse")
+st.markdown("# Updating the data warehouse")
+st.sidebar.header("Updating the data warehouse")
 st.write(
-    """Ici, nous pouvons mettre à jour les commentaires des internautes sur les parcs de DisneyLand"""
+    """Here we can update the comments of Internet users on the parks of DisneyLand"""
 )
 
 
 
 ### Connexion à Oracle
-try:
-    cx_Oracle.init_oracle_client(lib_dir="C:/Users/USER/Documents/Master_SISE/Projet/Text_mining/instantclient_21_8")
-except cx_Oracle.ProgrammingError as e:
-    # Client library is already initialized, do nothing
-    pass
-
-dsnStr = cx_Oracle.makedsn("db-etu.univ-lyon2.fr", "1521", "DBETU")
-con = cx_Oracle.connect(user="m134", password="m134", dsn=dsnStr)
+con = connect_to_database()
 cursor = con.cursor()
 
 # # Importer toutes les tables - dimensions
@@ -431,3 +424,5 @@ else:
     st.write("Il n'y a pas de nouveau commentaire")
     
 st.button("Re-run")
+
+con.close()

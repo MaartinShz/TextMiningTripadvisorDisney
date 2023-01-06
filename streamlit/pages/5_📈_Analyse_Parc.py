@@ -13,10 +13,15 @@ import pandas as pd
 import numpy as np
 import cx_Oracle
 import re
+from unidecode import unidecode
+import string
+#nltk.download('wordnet')
 from my_functions import my_corpora_2_vec
 from my_functions import nettoyage_corpus
 from my_functions import my_cah_from_doc2vec
-#nltk.download('wordnet')
+from connexion_Oracle import connect_to_database
+from my_functions import matrice_lien
+from my_functions import my_dendogram
 from nltk.stem import WordNetLemmatizer
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
@@ -25,6 +30,7 @@ from scipy.cluster.hierarchy import dendrogram, linkage,fcluster
 from sklearn.feature_extraction.text import CountVectorizer
 import matplotlib.pyplot as plt
 from wordcloud import WordCloud
+
 
 st.set_page_config(page_title="Analyse ", page_icon="📊")
 st.markdown("# Analyse")
@@ -35,15 +41,8 @@ st.write(
 
 
 
-try:
-    cx_Oracle.init_oracle_client(lib_dir="C:/Users/USER/Documents/Master_SISE/Projet/Text_mining/instantclient_21_8")
-except cx_Oracle.ProgrammingError as e:
-    # Client library is already initialized, do nothing
-    pass
-
-dsnStr = cx_Oracle.makedsn("db-etu.univ-lyon2.fr", "1521", "DBETU")
-con = cx_Oracle.connect(user="m134", password="m134", dsn=dsnStr)
-
+### Connexion à Oracle
+con = connect_to_database()
 
 
 #Importer la table 'commentaire_parc':
@@ -51,7 +50,7 @@ query_commentaire_parc = """SELECT*
            FROM COMMENTAIRE_PARC
            """
 commentaire_parc = pd.read_sql(query_commentaire_parc, con=con)
-st.write(commentaire_parc)
+
 
 
 # In[34]:
@@ -59,7 +58,7 @@ st.write(commentaire_parc)
 
 commentaire_parc["COMMENTAIRE"] = commentaire_parc["COMMENTAIRE"].astype(str)
 
-
+st.write(commentaire_parc)
 # In[35]:
 
 
@@ -89,16 +88,29 @@ words_parc = modele_parc.wv
 
 # CAH
 
-# In[18]:
+# In[87]:
 
 
-#A partir de la matrice de description des documents, réaliser une CAH (critère de Ward) 
-#et afficher le dendrogramme
+#la matrice des liens
+Z_parc = matrice_lien(corpus_liste_parc,words_parc)
 
 
-g1,mat1 = my_cah_from_doc2vec(corpus_liste_parc,words_parc,seuil=100)
+# In[88]:
 
 
+#afficher le dendrogramme
+my_dendogram(Z_parc)
+
+
+# In[ ]:
+
+
+#CAH (critère de Ward) 
+
+st.markdown("## CAH (critère de Ward) ")
+cah_parc = my_cah_from_doc2vec(corpus_liste_parc,Z_parc)
+
+st.write(cah_parc )
 # Word Cloud
 
 # In[38]:
@@ -153,9 +165,6 @@ plt.axis("off")
 plt.tight_layout(pad = 0)
  
 plt.show()
-
-
-
 
 con.close()
 

@@ -21,6 +21,7 @@ from my_functions import nettoyage_corpus
 from my_functions import my_cah_from_doc2vec
 from my_functions import matrice_lien
 from my_functions import my_dendogram
+from connexion_Oracle import connect_to_database
 from nltk.stem import WordNetLemmatizer
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
@@ -39,17 +40,7 @@ st.write(
 
 
 ### Connexion à Oracle
-try:
-    cx_Oracle.init_oracle_client(lib_dir="C:/Users/USER/Documents/Master_SISE/Projet/Text_mining/instantclient_21_8")
-except cx_Oracle.ProgrammingError as e:
-    # Client library is already initialized, do nothing
-    pass
-
-dsnStr = cx_Oracle.makedsn("db-etu.univ-lyon2.fr", "1521", "DBETU")
-con = cx_Oracle.connect(user="m134", password="m134", dsn=dsnStr)
-
-
-
+con = connect_to_database()
 # # Analyse des commentaires pour les hôtels
 
 # In[13]:
@@ -89,7 +80,6 @@ corpus_liste_hotel = nettoyage_corpus(corpus_original_hotel)
 modele_hotel = Word2Vec(corpus_liste_hotel,vector_size=1000,window=3,min_count=2,epochs=100)
 words_hotel = modele_hotel.wv
 
-st.markdown("## la matrice des liens")
 #la matrice des liens
 Z_hotel = matrice_lien(corpus_liste_hotel,words_hotel)
 #st.button("Re-run")
@@ -103,12 +93,12 @@ my_dendogram(Z_hotel)
 
 # In[78]:
 
-st.markdown("## critère de Ward")
+st.markdown("## CAH (critère de Ward) ")
 
 #CAH (critère de Ward) 
 
 cah_hotel = my_cah_from_doc2vec(corpus_liste_hotel,Z_hotel)
-
+st.write(cah_hotel )
 #st.button("Re-run")
 
 
