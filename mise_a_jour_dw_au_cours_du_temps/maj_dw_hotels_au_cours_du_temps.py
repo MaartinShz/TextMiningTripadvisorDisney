@@ -1,10 +1,4 @@
-#!/usr/bin/env python
-# coding: utf-8
-
 # # Connexion python et oracle
-
-# In[1]:
-
 
 # On import les packages nécessaires:
 import cx_Oracle
@@ -19,103 +13,60 @@ import requests
 from bs4 import BeautifulSoup
 
 
-# In[2]:
-
-
 cx_Oracle.init_oracle_client(lib_dir="/Users/dangnguyenviet/Desktop/Master 2 SISE/instantclient_19_8")
-
-
-# In[3]:
-
-
 dsnStr = cx_Oracle.makedsn("db-etu.univ-lyon2.fr", "1521", "DBETU")
 con = cx_Oracle.connect(user="m134", password="m134", dsn=dsnStr)
 cursor = con.cursor()
 
 
-# # Importer toutes les tables - dimensions¶
+########## Importer toutes les tables - dimensions¶
 
-# In[5]:
-
-
-#Importer la table 'note':
+###Importer la table 'note':
 query_note = """SELECT* 
            FROM NOTE
            """
 note = pd.read_sql(query_note, con=con)
 
-
-# In[6]:
-
-
-#Importer la table 'situation':
+###Importer la table 'situation':
 query_situation = """SELECT* 
            FROM SITUATION
            """
 situation = pd.read_sql(query_situation, con=con)
 
-
-# In[7]:
-
-
-#Importer la table 'datecommentaire':
+###Importer la table 'datecommentaire':
 query_datecommentaire = """SELECT* 
            FROM DATECOMMENTAIRE
            """
 datecommentaire = pd.read_sql(query_datecommentaire, con=con)
 
-
-# In[8]:
-
-
 # on crée une liste contenante mois et année en même temps:
-
 list_moisannee_commentaire = []
 list_moisannee_commentaire = datecommentaire["MOIS"] + " "+ datecommentaire["ANNÉE"]
 
-
-# In[9]:
-
-
-#Importer la table 'datesejour':
+###Importer la table 'datesejour':
 query_datesejour = """SELECT* 
            FROM DATESEJOUR
            """
 datesejour = pd.read_sql(query_datesejour, con=con)
-
-
-# In[10]:
-
 
 # on crée une liste contenante mois et année en même temps:
 
 list_moisannee_sejour = []
 list_moisannee_sejour = datesejour["MOIS"] + " "+ datesejour["ANNÉE"]
 
-
-# In[11]:
-
-
-#Importer la table 'localisation':
+###Importer la table 'localisation':
 query_localisation = """SELECT* 
            FROM LOCALISATION
            """
 localisation = pd.read_sql(query_localisation, con=con)
 
-
 # # Mise à jour datawarehouse pour les hôtels au cours du temps
 
-# In[12]:
-
-
-#Importer la table 'commentaire_hotel':
+###Importer la table 'commentaire_hotel':
 query_commentaire_hotel = """SELECT* 
            FROM COMMENTAIRE_HOTEL
            """
 commentaire_hotel = pd.read_sql(query_commentaire_hotel, con=con)
-
-
-# In[15]:
 
 
 def trait_date(text,dictio):
@@ -123,9 +74,6 @@ def trait_date(text,dictio):
         text = text.replace(key, dictio[key]).strip()
     
     return text
-
-
-# In[16]:
 
 
 headers = {
@@ -140,7 +88,6 @@ headers = {
 exportAvis = []
 
 
-# In[13]:
 
 
 # Web scraping:
@@ -224,9 +171,6 @@ def scrapHotel(url):
     return df 
 
 
-# In[17]:
-
-
 liste_df_hotel=[]
 for i in urlHotel:
     res = scrapHotel(i)
@@ -235,7 +179,6 @@ for i in urlHotel:
 hotel = pd.concat(liste_df_hotel,ignore_index=True)
 
 
-# In[18]:
 
 
 # on vérifie s'il y a des nouveaux commentaires:
@@ -246,14 +189,11 @@ for j,y in enumerate(commentaire_hotel["COMMENTAIRE"].tolist()):
             index_hotel.append(i)
 
 
-# In[19]:
 
 
 #on enlève les commentaires qui existent déjà dans la dw:
 hotel.drop(index=index_hotel,inplace=True)
 
-
-# In[21]:
 
 
 # on crée nouveaux "id_localisation" s'il y a des nouvelles localisations:
@@ -302,9 +242,6 @@ if len(hotel) > 0:
         
 else:
     print("Il n'y a pas de nouvelle localisation")
-
-
-# In[22]:
 
 
 # fonction de création dataframe pour les nouveaux commentaires pour les hotels:
@@ -379,9 +316,6 @@ def df_avis_hotel(data):
     return df_commentaire_new
 
 
-# In[23]:
-
-
 # on export les nouveaux commentaires s'il y en a:
 if len(hotel) > 0:
     df_commentaire_new_hotel = df_avis_hotel(hotel).fillna("")
@@ -399,10 +333,5 @@ if len(hotel) > 0:
     
 else:
     print("Il n'y a pas de nouveau commentaire")
-
-
-# In[ ]:
-
-
 
 
