@@ -1,55 +1,48 @@
 # On import les packages nécessaires:
 import pandas as pd
 import numpy as np
-from scrapping.database.connexion_Oracle import connect_to_database
 
+from scrapping.database.connexion_Oracle import connect_to_database
 # #Connexion BDD
 con = connect_to_database()
-
 cursor = con.cursor()
 
 ########## Importer toutes les tables - dimensions¶
 
 ###Importer la table 'note':
-res=cursor.execute("select * from note")
-for num, note in res:
-    print("Department number: ", num)
-    print("Department name: ", note)
-
-"""
-query_note = "SELECT* FROM NOTE"
+query_note = "SELECT * FROM NOTE"
 note = pd.read_sql(query_note, con=con)
 
 ###Importer la table 'situation':
-query_situation = "SELECT* FROM SITUATION"
+query_situation = "SELECT * FROM SITUATION"
 situation = pd.read_sql(query_situation, con=con)
 
 ###Importer la table 'datecommentaire':
-query_datecommentaire = "SELECT* FROM DATECOMMENTAIRE"
+query_datecommentaire = "SELECT * FROM DATECOMMENTAIRE"
 datecommentaire = pd.read_sql(query_datecommentaire, con=con)
 
-# on crée une liste contenante mois et année en même temps:
+# on cr�e une liste contenante mois et année en même temps:
 list_moisannee_commentaire = []
-list_moisannee_commentaire = datecommentaire["MOIS"] + " "+ datecommentaire["ANNÉE"]
+list_moisannee_commentaire = datecommentaire["MOIS"] + " "+ datecommentaire["ANN�E"]
 
 ###Importer la table 'datesejour':
-query_datesejour = "SELECT* FROM DATESEJOUR"
+query_datesejour = "SELECT * FROM DATESEJOUR"
 datesejour = pd.read_sql(query_datesejour, con=con)
 
-# on crée une liste contenante mois et année en même temps:
-
+# on cr�e une liste contenante mois et année en même temps:
 list_moisannee_sejour = []
-list_moisannee_sejour = datesejour["MOIS"] + " "+ datesejour["ANNÉE"]
+list_moisannee_sejour = datesejour["MOIS"] + " "+ datesejour["ANN�E"]
 
 ###Importer la table 'localisation':
-query_localisation = "SELECT* FROM LOCALISATION"
+query_localisation = "SELECT * FROM LOCALISATION"
 localisation = pd.read_sql(query_localisation, con=con)
 
 # # Mise �  jour datawarehouse pour les hôtels au cours du temps
 
 ###Importer la table 'commentaire_hotel':
-query_commentaire_hotel = "SELECT* FROM COMMENTAIRE_HOTEL"
+query_commentaire_hotel = "SELECT * FROM COMMENTAIRE_HOTEL"
 commentaire_hotel = pd.read_sql(query_commentaire_hotel, con=con)
+
 
 
 
@@ -62,22 +55,20 @@ urlHotel=["https://www.tripadvisor.fr/Hotel_Review-g1182377-d262678-Reviews-Disn
     "https://www.tripadvisor.fr/Hotel_Review-g5599092-d262683-Reviews-Disney_Hotel_Santa_Fe-Coupvray_Seine_et_Marne_Ile_de_France.html",
     "https://www.tripadvisor.fr/Hotel_Review-g1221082-d564634-Reviews-Disney_Davy_Crockett_Ranch-Bailly_Romainvilliers_Seine_et_Marne_Ile_de_France.html"
     ]
+#avishotel = scraping_hotel(urlHotel)
 
-
-avishotel = scraping_hotel(urlHotel)
+[
+    ["test",""] 
+]
 
 for avis in avishotel:
     
     s_loca = "INSERT INTO LOCALISATION(ID_LOCALISATION,LOCALISATION) VALUES(:1,:2)"
     s_commentaire_hotel = "INSERT INTO commentaire_hotel (Id_Commentaire, Id_Note, Id_DateCommentaire,Id_DateSejour,Id_Localisation,Titre,Commentaire) VALUES (:1, :2, :3, :4, :5, :6, :7)"
     
-
-"""
-
-
-
-
-
+    
+    #Importer de nouveau la table 'localisation':
+    localisation = pd.read_sql(query_localisation, con=con)
 
 
 
@@ -86,6 +77,8 @@ for avis in avishotel:
 
 
 ##############################################################################
+"""
+
 """
 # on vérifie s'il y a des nouveaux commentaires:
 index_hotel = []
@@ -102,7 +95,7 @@ hotel.drop(index=index_hotel,inplace=True)
 
 
 
-on crée nouveaux "id_localisation" s'il y a des nouvelles localisations:
+#on cr�e nouveaux "id_localisation" s'il y a des nouvelles localisations:
 
 if len(hotel) > 0:
     df_local_new_hotel = pd.DataFrame()
@@ -129,7 +122,8 @@ if len(hotel) > 0:
         cursor = con.cursor()
 
         s_loca = "INSERT INTO LOCALISATION(ID_LOCALISATION,LOCALISATION) VALUES(:1,:2)"
-   
+
+
         data_loca_new_hotel = []
         for line in df_local_new_hotel.values:
             data_loca_new_hotel.append(line)
@@ -141,8 +135,7 @@ if len(hotel) > 0:
         print("Il y a " + str(len(df_local_new_hotel)) + " nouvelles localisations")
         
         #Importer de nouveau la table 'localisation':
-        query_localisation = "SELECT* 
-            FROM LOCALISATION"
+        query_localisation = "SELECT * FROM LOCALISATION"
         localisation = pd.read_sql(query_localisation, con=con)
         
 else:
@@ -238,6 +231,6 @@ if len(hotel) > 0:
     
 else:
     print("Il n'y a pas de nouveau commentaire")
-
+"""
 """
 
