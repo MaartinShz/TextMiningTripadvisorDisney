@@ -29,8 +29,7 @@ st.write(
 
 ### Connexion à Oracle
 con = connect_to_database()
-cursor = con.cursor()
-
+#cursor = con.cursor()
 # # Importer toutes les tables - dimensions
 
 # In[4]:
