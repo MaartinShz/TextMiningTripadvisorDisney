@@ -1,4 +1,4 @@
-from driver import driver
+from scrapping.driver import *
 from date import trait_date
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
