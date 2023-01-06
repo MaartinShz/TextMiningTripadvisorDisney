@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
+# In[79]:
 
 
 # On import les packages nécessaires:
-import cx_Oracle
+#import cx_Oracle
+import oracledb
 import pandas as pd
 import numpy as np
 import csv
@@ -23,27 +24,23 @@ from sklearn.feature_extraction.text import CountVectorizer
 import matplotlib.pyplot as plt
 #pip install wordcloud
 from wordcloud import WordCloud
+import pattern
+from pattern.fr import sentiment
 
 
 # # Connexion python et oracle
 
-# In[2]:
+# In[80]:
 
 
-cx_Oracle.init_oracle_client(lib_dir="/Users/dangnguyenviet/Desktop/Master 2 SISE/instantclient_19_8")
-
-
-# In[3]:
-
-
-dsnStr = cx_Oracle.makedsn("db-etu.univ-lyon2.fr", "1521", "DBETU")
-con = cx_Oracle.connect(user="m134", password="m134", dsn=dsnStr)
+dsnStr = oracledb.makedsn("db-etu.univ-lyon2.fr", "1521", "DBETU")
+con = oracledb.connect(user="m134", password="m134", dsn=dsnStr)
 cursor = con.cursor()
 
 
 # # Les fonctions nécessaires pour l'analyse
 
-# In[4]:
+# In[43]:
 
 
 #récupérer la liste des ponctuations
@@ -52,7 +49,7 @@ ponctuations = list(string.punctuation)
 print(ponctuations)
 
 
-# In[5]:
+# In[44]:
 
 
 #liste des chiffres
@@ -60,7 +57,7 @@ chiffres = list("0123456789")
 print(chiffres)
 
 
-# In[6]:
+# In[45]:
 
 
 #outil pour procéder à la lemmatisation:
@@ -68,7 +65,7 @@ print(chiffres)
 lem = WordNetLemmatizer()
 
 
-# In[7]:
+# In[46]:
 
 
 #liste des mots vides
@@ -78,7 +75,7 @@ mots_vides = stopwords.words("french")
 # on ajoute qlq mots vides:
 liste_mots_vides = ["disneyland","disney land","disney","parc","parcs","très","trop","séjour","hôtel","hotel",
                    "lhotel","lhôtel","l'hôtel","chambre","chambres","c'est","cest","c'était","ça","cela",
-                   "avant","après","n'est","n'était","déjà","donc","alors","a","cet"]
+                   "avant","après","n'est","n'était","déjà","donc","alors","a","cet","j'ai","si","tres"]
 
 for i in liste_mots_vides:
     mots_vides.append(i)
@@ -86,7 +83,7 @@ for i in liste_mots_vides:
 print(mots_vides)
 
 
-# In[8]:
+# In[47]:
 
 
 #fonction pour nettoyage document (chaîne de caractères)
@@ -110,7 +107,7 @@ def nettoyage_doc(doc_param):
     return doc
 
 
-# In[9]:
+# In[48]:
 
 
 #fonction pour nettoyage corpus
@@ -121,7 +118,7 @@ def nettoyage_corpus(corpus,vire_vide=True):
     return output
 
 
-# In[10]:
+# In[49]:
 
 
 #fonction pour transformer un document en vecteur
@@ -152,7 +149,7 @@ def my_doc_2_vec(doc,trained):
     return vec
 
 
-# In[11]:
+# In[50]:
 
 
 #fonction pour représenter un corpus à partir d'une représentation
@@ -171,41 +168,43 @@ def my_corpora_2_vec(corpora,trained):
     return matVec
 
 
-# In[12]:
+# In[51]:
+
+
+#la matrice des liens
+def matrice_lien(corpus,trained):
+    #matrice doc2vec pour la représentation à 1000 dim.
+    #entraînée via word2vec sur les documents du corpus
+    mat = my_corpora_2_vec(corpus,trained)
+
+    #générer la matrice des liens
+    Z = linkage(mat,method='ward',metric='euclidean')
+    
+    return Z
+
+
+# In[52]:
+
+
+#dendrogramme avec le seuil
+def my_dendogram(matrice,seuil=100):
+    
+    plt.title("CAH")
+    dendrogram(matrice,orientation='left',color_threshold=seuil)
+    plt.show()
+
+
+# In[53]:
 
 
 #fonction pour construire une typologie à partir
 #d'une représentation des termes, qu'elle soit entraînée ou pré-entraînée
-#seuil par défaut = 1, mais le but est d'avoir 4 groupes
+#seuil par défaut = 100, mais le but est d'avoir 4 groupes
 #corpus ici se présente sous la forme d'une liste de listes de tokens
-def my_cah_from_doc2vec(corpus,trained,seuil=1.0,nbTermes=7):
-
-    #matrice doc2vec pour la représentation à 100 dim.
-    #entraînée via word2vec sur les documents du corpus
-    mat = my_corpora_2_vec(corpus,trained)
-
-    #dimension
-    #mat.shape
-
-    #générer la matrice des liens
-    Z = linkage(mat,method='ward',metric='euclidean')
-
-    #affichage du dendrogramme
-    plt.title("CAH")
-    dendrogram(Z,orientation='left',color_threshold=0)
-    plt.show()
-
-    #affichage du dendrogramme avec le seuil
-    plt.title("CAH")
-    dendrogram(Z,orientation='left',color_threshold=seuil)
-    plt.show()
+def my_cah_from_doc2vec(corpus,matrice,seuil=100,nbTermes=7):
 
     #découpage en 4 classes
-    grCAH = fcluster(Z,t=seuil,criterion='distance')
-    #print(grCAH)
-
-    #comptage
-    print(np.unique(grCAH,return_counts=True))
+    grCAH = fcluster(matrice,t=seuil,criterion='distance')
 
     #***************************
     #interprétation des clusters
@@ -219,60 +218,96 @@ def my_cah_from_doc2vec(corpus,trained,seuil=1.0,nbTermes=7):
     
     #matrice MDT
     mdt = parseur.fit_transform(corpus_string).toarray()
-    print("Dim. matrice documents-termes = {}".format(mdt.shape))
     
+    df_list =[]
     #passer en revue les groupes
     for num_cluster in range(np.max(grCAH)):
-        print("")
-        #numéro du cluster à traiter
-        print("Numero du cluster = {}".format(num_cluster+1))
         groupe = np.where(grCAH==num_cluster+1,1,0)
-        effectifs = np.unique(groupe,return_counts=True)
-        print("Effectifs = {}".format(effectifs[1][1]))
         #calcul de co-occurence
         cooc = np.apply_along_axis(func1d=lambda x: np.sum(x*groupe),axis=0,arr=mdt)
         #print(cooc)
         #création d'un data frame intermédiaire
-        tmpDF = pd.DataFrame(data=cooc,columns=['freq'],index=parseur.get_feature_names_out())    
+        df = pd.DataFrame(data=cooc,columns=['Fréquence'],index=parseur.get_feature_names_out())    
         #affichage des "nbTermes" termes les plus fréquents
-        print(tmpDF.sort_values(by='freq',ascending=False).iloc[:nbTermes,:])
+        df = df.sort_values(by='Fréquence',ascending=False).iloc[:nbTermes,:]
+        df_list.append(df)
+
         
     #renvoyer l'indicateur d'appartenance aux groupes
-    return grCAH, mat
+    return df_list
+
+
+# In[54]:
+
+
+# Préparation pour worldcloud:
+def mots_worldcloud(data):
+    comment_words = ''
+
+    # pour chaque mot dans data:
+    for val in data.values:
+     
+        # convertir en string
+        val = str(val)
+ 
+        # split
+        tokens = val.split()
+     
+        # convertir en lowercase
+        for i in range(len(tokens)):
+            tokens[i] = tokens[i].lower()
+     
+        comment_words += " ".join(tokens)+" "
+    return comment_words
+
+
+# In[55]:
+
+
+# Classent des sentiments commentaires:
+def liste_sentiment(liste_note):
+    liste_sen = []
+    for i in liste_note:
+        if i[0] < 0.2:
+            liste_sen.append("Très négatif")
+        elif (i[0]>=0.2)&(i[0]<=0.4):
+            liste_sen.append("Négatif")
+        elif (i[0]>0.4)&(i[0]<=0.6):
+            liste_sen.append("Neutre")
+        elif (i[0]>0.6)&(i[0]<0.8):
+            liste_sen.append("Positif")
+        else:
+            liste_sen.append("Très positif")
+    return liste_sen
 
 
 # # Analyse des commentaires pour les hôtels
 
-# In[ ]:
+# In[83]:
 
 
 #Importer la table 'commentaire_hotel':
-query_commentaire_hotel = """SELECT* 
-           FROM COMMENTAIRE_HOTEL
-           """
+query_commentaire_hotel = "SELECT * FROM COMMENTAIRE_HOTEL"
 commentaire_hotel = pd.read_sql(query_commentaire_hotel, con=con)
-print(commentaire_hotel)
 
 
-# In[ ]:
+# In[71]:
 
 
 #Chargez dans une liste des commentaires pour chaque item
 corpus_original_hotel = []
 for i in commentaire_hotel["COMMENTAIRE"].values:
     corpus_original_hotel.append(i)
-corpus_original_hotel
 
 
-# In[ ]:
+# In[72]:
 
 
 #corpus après pré-traitement, sous forme de listes de liste de tokens
 corpus_liste_hotel = nettoyage_corpus(corpus_original_hotel)
-corpus_liste_hotel
 
 
-# In[ ]:
+# In[16]:
 
 
 #construire la représentation à 1000 dim.
@@ -283,48 +318,42 @@ words_hotel = modele_hotel.wv
 
 # CAH
 
-# In[ ]:
+# In[19]:
 
 
-#A partir de la matrice de description des documents, réaliser une CAH (critère de Ward) 
-#et afficher le dendrogramme
+#la matrice des liens
+Z_hotel = matrice_lien(corpus_liste_hotel,words_hotel)
 
-g2,mat2 = my_cah_from_doc2vec(corpus_liste_hotel,words_hotel,seuil=100)
+
+# In[39]:
+
+
+#afficher le dendrogramme
+my_dendogram(Z_hotel)
+
+
+# In[78]:
+
+
+#CAH (critère de Ward) 
+
+cah_hotel = my_cah_from_doc2vec(corpus_liste_hotel,Z_hotel)
 
 
 # Word Cloud
 
-# In[ ]:
+# In[21]:
 
 
-comment_words_hotel = ''
-
-# pour chaque mot dans commentaire_hotel["COMMENTAIRE"]:
-for val in commentaire_hotel["COMMENTAIRE"].values:
-     
-    # convertir en string
-    val = str(val)
- 
-    # split
-    tokens = val.split()
-     
-    # convertir en lowercase
-    for i in range(len(tokens)):
-        tokens[i] = tokens[i].lower()
-     
-    comment_words_hotel += " ".join(tokens)+" "
-
-
-# In[ ]:
-
-
+#World Cloud:
+comment_words_hotel = mots_worldcloud(commentaire_hotel["COMMENTAIRE"])
 wordcloud_hotel = WordCloud(width = 800, height = 800,
                 background_color ='white',
                       stopwords = mots_vides,
                 min_font_size = 10).generate(comment_words_hotel)
 
 
-# In[ ]:
+# In[22]:
 
 
 # plot WordCloud                     
@@ -336,44 +365,174 @@ plt.tight_layout(pad = 0)
 plt.show()
 
 
+# Analyse des sentiments
+
+# In[23]:
+
+
+#pip install pattern
+
+
+# In[73]:
+
+
+list_note_hotel = [sentiment(i) for i in corpus_liste_hotel]
+
+
+# In[76]:
+
+
+count_hotel
+
+
+# In[74]:
+
+
+liste_sen_hotel  = liste_sentiment(list_note_hotel)
+commentaire_hotel["Sentiments"] = liste_sen_hotel
+count_hotel = commentaire_hotel["Sentiments"].value_counts()
+plt.pie(count_hotel)
+plt.legend(["Très négatif","Négatif","Neutre","Positif","Très positif"])
+
+
+# In[75]:
+
+
+tres_positif_hotel = commentaire_hotel["COMMENTAIRE"][commentaire_hotel["Sentiments"]=="Très positif"]
+positif_hotel = commentaire_hotel["COMMENTAIRE"][commentaire_hotel["Sentiments"]=="Positif"]
+neutre_hotel = commentaire_hotel["COMMENTAIRE"][commentaire_hotel["Sentiments"]=="Neutre"]
+negatif_hotel = commentaire_hotel["COMMENTAIRE"][commentaire_hotel["Sentiments"]=="Négatif"]
+tres_negatif_hotel = commentaire_hotel["COMMENTAIRE"][commentaire_hotel["Sentiments"]=="Très négatif"]
+
+
+# In[29]:
+
+
+tres_positif_hotel_str = mots_worldcloud(tres_positif_hotel)
+
+wordcloud_tres_positif_hotel = WordCloud(width = 800, height = 800,
+                background_color ='white',
+                      stopwords = mots_vides,
+                min_font_size = 10).generate(tres_positif_hotel_str)
+
+# plot WordCloud                     
+plt.figure(figsize = (8, 8), facecolor = None)
+plt.imshow(wordcloud_tres_positif_hotel)
+plt.axis("off")
+plt.tight_layout(pad = 0)
+ 
+plt.show()
+
+
+# In[30]:
+
+
+positif_hotel_str = mots_worldcloud(positif_hotel)
+
+wordcloud_positif_hotel = WordCloud(width = 800, height = 800,
+                background_color ='white',
+                      stopwords = mots_vides,
+                min_font_size = 10).generate(positif_hotel_str)
+
+# plot WordCloud                     
+plt.figure(figsize = (8, 8), facecolor = None)
+plt.imshow(wordcloud_positif_hotel)
+plt.axis("off")
+plt.tight_layout(pad = 0)
+ 
+plt.show()
+
+
+# In[31]:
+
+
+neutre_hotel_str = mots_worldcloud(neutre_hotel)
+
+wordcloud_neutre_hotel = WordCloud(width = 800, height = 800,
+                background_color ='white',
+                      stopwords = mots_vides,
+                min_font_size = 10).generate(neutre_hotel_str)
+
+# plot WordCloud                     
+plt.figure(figsize = (8, 8), facecolor = None)
+plt.imshow(wordcloud_neutre_hotel)
+plt.axis("off")
+plt.tight_layout(pad = 0)
+ 
+plt.show()
+
+
+# In[34]:
+
+
+negatif_hotel_str = mots_worldcloud(negatif_hotel)
+
+wordcloud_negatif_hotel = WordCloud(width = 800, height = 800,
+                background_color ='white',
+                      stopwords = mots_vides,
+                min_font_size = 10).generate(negatif_hotel_str)
+
+# plot WordCloud                     
+plt.figure(figsize = (8, 8), facecolor = None)
+plt.imshow(wordcloud_negatif_hotel)
+plt.axis("off")
+plt.tight_layout(pad = 0)
+ 
+plt.show()
+
+
+# In[35]:
+
+
+tres_negatif_hotel_str = mots_worldcloud(tres_negatif_hotel)
+
+wordcloud_tres_negatif_hotel = WordCloud(width = 800, height = 800,
+                background_color ='white',
+                      stopwords = mots_vides,
+                min_font_size = 10).generate(tres_negatif_hotel_str)
+
+# plot WordCloud                     
+plt.figure(figsize = (8, 8), facecolor = None)
+plt.imshow(wordcloud_tres_negatif_hotel)
+plt.axis("off")
+plt.tight_layout(pad = 0)
+ 
+plt.show()
+
+
 # # Analyse des commentaires pour les parcs
 
-# In[13]:
+# In[56]:
 
 
 #Importer la table 'commentaire_parc':
-query_commentaire_parc = """SELECT* 
-           FROM COMMENTAIRE_PARC
-           """
+query_commentaire_parc = "SELECT* FROM COMMENTAIRE_PARC"
 commentaire_parc = pd.read_sql(query_commentaire_parc, con=con)
-print(commentaire_parc)
 
 
-# In[14]:
+# In[57]:
 
 
 commentaire_parc["COMMENTAIRE"] = commentaire_parc["COMMENTAIRE"].astype(str)
 
 
-# In[15]:
+# In[58]:
 
 
 #Chargez dans une liste les commentaires pour chaque item
 corpus_original_parc = []
 for i in commentaire_parc["COMMENTAIRE"].values:
     corpus_original_parc.append(i)
-corpus_original_parc
 
 
-# In[16]:
+# In[59]:
 
 
 #corpus après pré-traitement, sous forme de listes de liste de tokens
 corpus_liste_parc = nettoyage_corpus(corpus_original_parc)
-corpus_liste_parc
 
 
-# In[17]:
+# In[86]:
 
 
 #construire la représentation à 1000 dim.
@@ -384,48 +543,41 @@ words_parc = modele_parc.wv
 
 # CAH
 
-# In[18]:
+# In[87]:
 
 
-#A partir de la matrice de description des documents, réaliser une CAH (critère de Ward) 
-#et afficher le dendrogramme
+#la matrice des liens
+Z_parc = matrice_lien(corpus_liste_parc,words_parc)
 
-g1,mat1 = my_cah_from_doc2vec(corpus_liste_parc,words_parc,seuil=100)
+
+# In[88]:
+
+
+#afficher le dendrogramme
+my_dendogram(Z_parc)
+
+
+# In[89]:
+
+
+#CAH (critère de Ward) 
+
+cah_parc = my_cah_from_doc2vec(corpus_liste_parc,Z_parc)
 
 
 # Word Cloud
 
-# In[19]:
+# In[39]:
 
 
-comment_words_parc = ''
-
-# pour chaque mot dans commentaire["COMMENTAIRE"]:
-for val in commentaire_parc["COMMENTAIRE"].values:
-     
-    # convertir en string
-    val = str(val)
- 
-    # split
-    tokens = val.split()
-     
-    # convertir en lowercase
-    for i in range(len(tokens)):
-        tokens[i] = tokens[i].lower()
-     
-    comment_words_parc += " ".join(tokens)+" "
-
-
-# In[20]:
-
-
+comment_words_parc = mots_worldcloud(commentaire_parc["COMMENTAIRE"])
 wordcloud_parc = WordCloud(width = 800, height = 800,
                 background_color ='white',
                       stopwords = mots_vides,
                 min_font_size = 10).generate(comment_words_parc)
 
 
-# In[21]:
+# In[40]:
 
 
 # plot WordCloud                     
@@ -435,4 +587,137 @@ plt.axis("off")
 plt.tight_layout(pad = 0)
  
 plt.show()
+
+
+# In[60]:
+
+
+list_note_parc = [sentiment(i) for i in corpus_liste_parc]
+
+
+# In[68]:
+
+
+count_parc
+
+
+# In[69]:
+
+
+liste_sen_parc  = liste_sentiment(list_note_parc)
+commentaire_parc["Sentiments"] = liste_sen_parc
+count_parc = commentaire_parc["Sentiments"].value_counts()
+plt.pie(count_parc)
+plt.legend(["Très négatif","Négatif","Neutre","Positif","Très positif"])
+
+
+# In[62]:
+
+
+tres_positif_parc = commentaire_parc["COMMENTAIRE"][commentaire_parc["Sentiments"]=="Très positif"]
+positif_parc = commentaire_parc["COMMENTAIRE"][commentaire_parc["Sentiments"]=="Positif"]
+neutre_parc = commentaire_parc["COMMENTAIRE"][commentaire_parc["Sentiments"]=="Neutre"]
+negatif_parc = commentaire_parc["COMMENTAIRE"][commentaire_parc["Sentiments"]=="Négatif"]
+tres_negatif_parc = commentaire_parc["COMMENTAIRE"][commentaire_parc["Sentiments"]=="Très négatif"]
+
+
+# In[63]:
+
+
+tres_positif_parc_str = mots_worldcloud(tres_positif_parc)
+
+wordcloud_tres_positif_parc = WordCloud(width = 800, height = 800,
+                background_color ='white',
+                      stopwords = mots_vides,
+                min_font_size = 10).generate(tres_positif_parc_str)
+
+# plot WordCloud                     
+plt.figure(figsize = (8, 8), facecolor = None)
+plt.imshow(wordcloud_tres_positif_parc)
+plt.axis("off")
+plt.tight_layout(pad = 0)
+ 
+plt.show()
+
+
+# In[64]:
+
+
+positif_parc_str = mots_worldcloud(positif_parc)
+
+wordcloud_positif_parc = WordCloud(width = 800, height = 800,
+                background_color ='white',
+                      stopwords = mots_vides,
+                min_font_size = 10).generate(positif_parc_str)
+
+# plot WordCloud                     
+plt.figure(figsize = (8, 8), facecolor = None)
+plt.imshow(wordcloud_positif_parc)
+plt.axis("off")
+plt.tight_layout(pad = 0)
+ 
+plt.show()
+
+
+# In[65]:
+
+
+neutre_parc_str = mots_worldcloud(neutre_parc)
+
+wordcloud_neutre_parc = WordCloud(width = 800, height = 800,
+                background_color ='white',
+                      stopwords = mots_vides,
+                min_font_size = 10).generate(neutre_parc_str)
+
+# plot WordCloud                     
+plt.figure(figsize = (8, 8), facecolor = None)
+plt.imshow(wordcloud_neutre_parc)
+plt.axis("off")
+plt.tight_layout(pad = 0)
+ 
+plt.show()
+
+
+# In[66]:
+
+
+negatif_parc_str = mots_worldcloud(negatif_parc)
+
+wordcloud_negatif_parc = WordCloud(width = 800, height = 800,
+                background_color ='white',
+                      stopwords = mots_vides,
+                min_font_size = 10).generate(negatif_parc_str)
+
+# plot WordCloud                     
+plt.figure(figsize = (8, 8), facecolor = None)
+plt.imshow(wordcloud_negatif_parc)
+plt.axis("off")
+plt.tight_layout(pad = 0)
+ 
+plt.show()
+
+
+# In[67]:
+
+
+tres_negatif_parc_str = mots_worldcloud(tres_negatif_parc)
+
+wordcloud_tres_negatif_parc = WordCloud(width = 800, height = 800,
+                background_color ='white',
+                      stopwords = mots_vides,
+                min_font_size = 10).generate(tres_negatif_parc_str)
+
+# plot WordCloud                     
+plt.figure(figsize = (8, 8), facecolor = None)
+plt.imshow(wordcloud_tres_negatif_parc)
+plt.axis("off")
+plt.tight_layout(pad = 0)
+ 
+plt.show()
+
+
+# In[ ]:
+
+
+
 
