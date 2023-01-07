@@ -13,9 +13,6 @@ cursor = con.cursor()
 query_note = "SELECT * FROM NOTE"
 note = pd.read_sql(query_note, con=con)
 
-###Importer la table 'situation':
-query_situation = "SELECT * FROM SITUATION"
-situation = pd.read_sql(query_situation, con=con)
 
 ###Importer la table 'datecommentaire':
 query_datecommentaire = "SELECT * FROM DATECOMMENTAIRE"
@@ -37,16 +34,14 @@ list_moisannee_sejour = datesejour["MOIS"] + " "+ datesejour["ANNÉE"]
 query_localisation = "SELECT * FROM LOCALISATION"
 localisation = pd.read_sql(query_localisation, con=con)
 
-# # Mise Ã  jour datawarehouse pour les hÃ´tels au cours du temps
+# # Mise à jour datawarehouse pour les hÃ´tels au cours du temps
 
 ###Importer la table 'commentaire_hotel':
 query_commentaire_hotel = "SELECT * FROM COMMENTAIRE_HOTEL"
 commentaire_hotel = pd.read_sql(query_commentaire_hotel, con=con)
 
 
-
-
-from scrapping.hotel_scrap import *
+#from scrapping.hotel_scrap import *
 
 urlHotel=["https://www.tripadvisor.fr/Hotel_Review-g1182377-d262678-Reviews-Disney_Hotel_New_York_The_Art_of_Marvel-Chessy_Marne_la_Vallee_Seine_et_Marne_Ile_de_F.html",
     "https://www.tripadvisor.fr/Hotel_Review-g1182377-d262679-Reviews-Disney_Newport_Bay_Club-Chessy_Marne_la_Vallee_Seine_et_Marne_Ile_de_France.html",
@@ -55,20 +50,42 @@ urlHotel=["https://www.tripadvisor.fr/Hotel_Review-g1182377-d262678-Reviews-Disn
     "https://www.tripadvisor.fr/Hotel_Review-g5599092-d262683-Reviews-Disney_Hotel_Santa_Fe-Coupvray_Seine_et_Marne_Ile_de_France.html",
     "https://www.tripadvisor.fr/Hotel_Review-g1221082-d564634-Reviews-Disney_Davy_Crockett_Ranch-Bailly_Romainvilliers_Seine_et_Marne_Ile_de_France.html"
     ]
+
 #avishotel = scraping_hotel(urlHotel)
 
-[
-    ["test",""] 
+avishotel= [
+    ["L_745",12] 
 ]
 
 for avis in avishotel:
+    avis = avis
+    # SELECT si champs des dimension dans la bdd
+        
+    # selectDateCommentaire = cursor.execute("SELECT * from DATECOMMENTAIRE WHERE ID_DATECOMMENTAIRE = :iddateCommentaire", iddateCommentaire=avis[0]).fetchone()
+    # print(selectDateCommentaire)
+    # selectDateSejour = cursor.execute("SELECT * from DATESEJOUR WHERE ID_DATESEJOUR = :iddateSejour", iddateSejour=avis[0]).fetchone()
+    # print(selectDateSejour)
+    # selectLocalisation = cursor.execute("SELECT * from LOCALISATION WHERE ID_LOCALISATION = :idLocalisation", idLocalisation=avis[0]).fetchone()
+    # print(selectLocalisation)
+
+    # selectNote = cursor.execute("SELECT * from NOTE WHERE ID_NOTE = :idnote", idnote=avis[0]).fetchone()
+    # print(selectNote)#if row is None:
+        
+    # INSERT
+    # cursor.execute("INSERT INTO NOTE(ID_NOTE,NOTE) VALUES (:id, :note)", avis)
     
-    s_loca = "INSERT INTO LOCALISATION(ID_LOCALISATION,LOCALISATION) VALUES(:1,:2)"
-    s_commentaire_hotel = "INSERT INTO commentaire_hotel (Id_Commentaire, Id_Note, Id_DateCommentaire,Id_DateSejour,Id_Localisation,Titre,Commentaire) VALUES (:1, :2, :3, :4, :5, :6, :7)"
+    # cursor.execute("INSERT INTO DATECOMMENTAIRE(ID_DATECOMMENTAIRE,MOIS, ANNÉE) VALUES (:id, :note)", avis)
+    # cursor.execute("INSERT INTO DATESEJOUR(ID_DATESEJOUR,MOIS, ANNÉE) VALUES (:id, :note)", avis)
+    # cursor.execute("INSERT INTO LOCALISATION(ID_LOCALISATION,LOCALISATION) VALUES (:id, :note)", avis)
     
-    
-    #Importer de nouveau la table 'localisation':
-    localisation = pd.read_sql(query_localisation, con=con)
+    # cursor.execute("INSERT INTO COMMENTAIRE_HOTEL(ID_COMMENTAIRE, ID_NOTE,ID_DATECOMMENTAIRE, ID_DATESEJOUR, ID_LOCALISATION, TITRE, COMMENTAIRE) VALUES (:id, :note)", avis)
+    #con.commit()
+
+
+#Importer de nouveau la table 'localisation':
+#localisation = pd.read_sql(query_localisation, con=con)
+#note =pd.read_sql(query_note, con=con)
+#print(note)
 
 
 
@@ -77,7 +94,7 @@ for avis in avishotel:
 
 
 ##############################################################################
-"""
+
 
 """
 # on vÃ©rifie s'il y a des nouveaux commentaires:
@@ -231,6 +248,5 @@ if len(hotel) > 0:
     
 else:
     print("Il n'y a pas de nouveau commentaire")
-"""
 """
 
