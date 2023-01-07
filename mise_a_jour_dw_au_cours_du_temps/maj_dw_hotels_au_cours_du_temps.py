@@ -54,32 +54,35 @@ urlHotel=["https://www.tripadvisor.fr/Hotel_Review-g1182377-d262678-Reviews-Disn
 #avishotel = scraping_hotel(urlHotel)
 
 avishotel= [
-    ["L_745",12] 
+    ["test",999] 
 ]
 
 for avis in avishotel:
-    avis = avis
-    # SELECT si champs des dimension dans la bdd
+    #SELECT si champs des dimension dans la bdd
+    
+    selectDateCommentaire = cursor.execute("SELECT * from DATECOMMENTAIRE WHERE ID_DATECOMMENTAIRE = :iddateCommentaire", iddateCommentaire=avis[0]).fetchone()
+    print(selectDateCommentaire)
+    if selectDateCommentaire is None:
+        cursor.execute("INSERT INTO DATECOMMENTAIRE(ID_DATECOMMENTAIRE,MOIS, ANNÉE) VALUES (:iddateCommentaire, :mois, :annee)", iddateCommentaire = avis, mois = avis, annee = avis)
         
-    # selectDateCommentaire = cursor.execute("SELECT * from DATECOMMENTAIRE WHERE ID_DATECOMMENTAIRE = :iddateCommentaire", iddateCommentaire=avis[0]).fetchone()
-    # print(selectDateCommentaire)
-    # selectDateSejour = cursor.execute("SELECT * from DATESEJOUR WHERE ID_DATESEJOUR = :iddateSejour", iddateSejour=avis[0]).fetchone()
-    # print(selectDateSejour)
-    # selectLocalisation = cursor.execute("SELECT * from LOCALISATION WHERE ID_LOCALISATION = :idLocalisation", idLocalisation=avis[0]).fetchone()
-    # print(selectLocalisation)
+    selectDateSejour = cursor.execute("SELECT * from DATESEJOUR WHERE ID_DATESEJOUR = :iddateSejour", iddateSejour=avis[0]).fetchone()
+    print(selectDateSejour)
+    if selectDateSejour is None:
+        cursor.execute("INSERT INTO DATESEJOUR(ID_DATESEJOUR,MOIS, ANNÉE) VALUES (:iddateSejour, :mois, :annee)", iddateSejour = avis, mois = avis, annee = avis)
+    
+    selectLocalisation = cursor.execute("SELECT * from LOCALISATION WHERE ID_LOCALISATION = :idLocalisation", idLocalisation=avis[0]).fetchone()
+    print(selectLocalisation)
+    if selectDateSejour is None:
+        cursor.execute("INSERT INTO LOCALISATION(ID_LOCALISATION,LOCALISATION) VALUES (:id, :note)", avis)
 
-    # selectNote = cursor.execute("SELECT * from NOTE WHERE ID_NOTE = :idnote", idnote=avis[0]).fetchone()
-    # print(selectNote)#if row is None:
-        
-    # INSERT
-    # cursor.execute("INSERT INTO NOTE(ID_NOTE,NOTE) VALUES (:id, :note)", avis)
+    selectNote = cursor.execute("SELECT * from NOTE WHERE ID_NOTE = :idnote", idnote=avis[0]).fetchone()
+    print(selectNote)
+    if selectNote is None:
+        cursor.execute("INSERT INTO NOTE(ID_NOTE,NOTE) VALUES (:id, :note)", avis)
     
-    # cursor.execute("INSERT INTO DATECOMMENTAIRE(ID_DATECOMMENTAIRE,MOIS, ANNÉE) VALUES (:id, :note)", avis)
-    # cursor.execute("INSERT INTO DATESEJOUR(ID_DATESEJOUR,MOIS, ANNÉE) VALUES (:id, :note)", avis)
-    # cursor.execute("INSERT INTO LOCALISATION(ID_LOCALISATION,LOCALISATION) VALUES (:id, :note)", avis)
     
-    # cursor.execute("INSERT INTO COMMENTAIRE_HOTEL(ID_COMMENTAIRE, ID_NOTE,ID_DATECOMMENTAIRE, ID_DATESEJOUR, ID_LOCALISATION, TITRE, COMMENTAIRE) VALUES (:id, :note)", avis)
-    #con.commit()
+    cursor.execute("INSERT INTO COMMENTAIRE_HOTEL(ID_COMMENTAIRE, ID_NOTE,ID_DATECOMMENTAIRE, ID_DATESEJOUR, ID_LOCALISATION, TITRE, COMMENTAIRE) VALUES (:id, :note)", avis)
+    con.commit()
 
 
 #Importer de nouveau la table 'localisation':
