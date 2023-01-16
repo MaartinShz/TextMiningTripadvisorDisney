@@ -1,5 +1,12 @@
 # TextMiningTripadvisorDisney
 
+Reste à faire:
+- Docker
+- Vidéo démonstration 
+- rapport
+- drive
+
+
 
 2 parties avec bs4 et une avec Selenium
 
