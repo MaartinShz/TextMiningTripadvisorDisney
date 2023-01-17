@@ -10,6 +10,7 @@ import altair as alt
 from urllib.error import URLError
 import pandas as pd
 import numpy as np
+from wordcloud import WordCloud
 import re
 from unidecode import unidecode
 import string
@@ -54,7 +55,7 @@ mots_vides = stopwords.words("french")
 # on ajoute qlq mots vides:
 liste_mots_vides = ["disneyland","disney land","disney","parc","parcs","très","trop","séjour","hôtel","hotel",
                    "lhotel","lhôtel","l'hôtel","chambre","chambres","c'est","cest","c'était","ça","cela",
-                   "avant","après","n'est","n'était","déjà","donc","alors","a","cet","j'ai","si"]
+                   "avant","après","n'est","n'était","déjà","donc","alors","a","cet","j'ai","si","tres"]
 
 for i in liste_mots_vides:
     mots_vides.append(i)
@@ -166,10 +167,11 @@ def matrice_lien(corpus,trained):
 
 
 #dendrogramme avec le seuil
-def my_dendogram(matrice,seuil=100):
+def my_dendogram(matrice,seuil=10):
     
     #st.write("CAH")
     dendrogram(matrice,orientation='left',color_threshold=seuil)
+    st.set_option('deprecation.showPyplotGlobalUse', False)
     st.pyplot()
 
 
@@ -180,7 +182,8 @@ def my_dendogram(matrice,seuil=100):
 #d'une représentation des termes, qu'elle soit entraînée ou pré-entraînée
 #seuil par défaut = 100, mais le but est d'avoir 4 groupes
 #corpus ici se présente sous la forme d'une liste de listes de tokens
-def my_cah_from_doc2vec(corpus,matrice,seuil=100,nbTermes=7):
+def my_cah_from_doc2vec(corpus,matrice,seuil=10,nbTermes=7):
+    ### permettre à l'utilisateur de choisir le seuil
 
     #découpage en 4 classes
     grCAH = fcluster(matrice,t=seuil,criterion='distance')
@@ -209,8 +212,61 @@ def my_cah_from_doc2vec(corpus,matrice,seuil=100,nbTermes=7):
         df = pd.DataFrame(data=cooc,columns=['Fréquence'],index=parseur.get_feature_names_out())    
         #affichage des "nbTermes" termes les plus fréquents
         df = df.sort_values(by='Fréquence',ascending=False).iloc[:nbTermes,:]
-        df_list.append(df)
+        #df_list.append(df)
+        st.write(df)
 
         
     #renvoyer l'indicateur d'appartenance aux groupes
     return df_list
+
+
+# Préparation pour worldcloud:
+def mots_worldcloud(data):
+    comment_words = ''
+
+    # pour chaque mot dans data:
+    for val in data.values:
+     
+        # convertir en string
+        val = str(val)
+ 
+        # split
+        tokens = val.split()
+     
+        # convertir en lowercase
+        for i in range(len(tokens)):
+            tokens[i] = tokens[i].lower()
+     
+        comment_words += " ".join(tokens)+" "
+        
+    wordcloud = WordCloud(width = 800, height = 800,
+                background_color ='white',
+                      stopwords = mots_vides,
+                min_font_size = 10).generate(comment_words)
+
+    # plot WordCloud                     
+    plt.figure(figsize = (8, 8), facecolor = None)
+    plt.imshow(wordcloud)
+    plt.axis("off")
+    plt.tight_layout(pad = 0)
+    st.set_option('deprecation.showPyplotGlobalUse', False)
+    st.pyplot()
+    
+    return comment_words
+
+
+# Classent des sentiments commentaires:
+def liste_sentiment(liste_note):
+    liste_sen = []
+    for i in liste_note:
+        if i[0] < -0.5:
+            liste_sen.append("Très négatif")
+        elif (i[0]>=-0.5)&(i[0]<=0):
+            liste_sen.append("Négatif")
+        elif (i[0]>0)&(i[0]<=0.2):
+            liste_sen.append("Neutre")
+        elif (i[0]>0.2)&(i[0]<0.7):
+            liste_sen.append("Positif")
+        else:
+            liste_sen.append("Très positif")
+    return liste_sen

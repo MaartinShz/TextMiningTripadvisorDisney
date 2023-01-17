@@ -31,7 +31,6 @@ cursor = con.cursor()
 
 # # Importer toutes les tables - dimensions¶
 
-# In[5]:
 
 
 #Importer la table 'note':
@@ -41,17 +40,12 @@ query_note = """SELECT*
 note = pd.read_sql(query_note, con=con)
 
 
-# In[6]:
-
-
 #Importer la table 'situation':
 query_situation = """SELECT* 
            FROM SITUATION
            """
 situation = pd.read_sql(query_situation, con=con)
 
-
-# In[7]:
 
 
 #Importer la table 'datecommentaire':
@@ -61,17 +55,11 @@ query_datecommentaire = """SELECT*
 datecommentaire = pd.read_sql(query_datecommentaire, con=con)
 
 
-# In[8]:
-
 
 # on crée une liste contenante mois et année en même temps:
 
 list_moisannee_commentaire = []
 list_moisannee_commentaire = datecommentaire["MOIS"] + " "+ datecommentaire["ANNÉE"]
-
-
-# In[9]:
-
 
 #Importer la table 'datesejour':
 query_datesejour = """SELECT* 
@@ -80,16 +68,10 @@ query_datesejour = """SELECT*
 datesejour = pd.read_sql(query_datesejour, con=con)
 
 
-# In[10]:
-
-
 # on crée une liste contenante mois et année en même temps:
 
 list_moisannee_sejour = []
 list_moisannee_sejour = datesejour["MOIS"] + " "+ datesejour["ANNÉE"]
-
-
-# In[11]:
 
 
 #Importer la table 'localisation':
@@ -101,9 +83,6 @@ localisation = pd.read_sql(query_localisation, con=con)
 
 # # Mise à jour datawarehouse pour les hôtels au cours du temps
 
-# In[12]:
-
-
 #Importer la table 'commentaire_hotel':
 query_commentaire_hotel = """SELECT* 
            FROM COMMENTAIRE_HOTEL
@@ -111,17 +90,11 @@ query_commentaire_hotel = """SELECT*
 commentaire_hotel = pd.read_sql(query_commentaire_hotel, con=con)
 
 
-# In[15]:
-
-
 def trait_date(text,dictio):
     for key in dictio:
         text = text.replace(key, dictio[key]).strip()
     
     return text
-
-
-# In[16]:
 
 
 headers = {
@@ -134,9 +107,6 @@ headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36'}
 
 exportAvis = []
-
-
-# In[13]:
 
 
 # Web scraping:
@@ -220,8 +190,6 @@ def scrapHotel(url):
     return df 
 
 
-# In[17]:
-
 
 liste_df_hotel=[]
 for i in urlHotel:
@@ -231,7 +199,6 @@ for i in urlHotel:
 hotel = pd.concat(liste_df_hotel,ignore_index=True)
 
 
-# In[18]:
 
 
 # on vérifie s'il y a des nouveaux commentaires:
