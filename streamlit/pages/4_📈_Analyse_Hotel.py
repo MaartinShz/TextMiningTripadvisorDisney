@@ -203,11 +203,11 @@ if selected_option == "Commentaires":
     Z_hotel = matrice_lien(corpus_liste_hotel_year,words_hotel)
     #st.button("Re-run")
     
-    
+    number = st.number_input("Entrez un seuil :", min_value=5, max_value=200, step=1, format="%d", value=10)
     
     st.markdown("## le dendrogramme")
     #afficher le dendrogramme
-    my_dendogram(Z_hotel)
+    my_dendogram(Z_hotel,seuil=number)
     #st.button("Re-run")
     
     
@@ -215,7 +215,7 @@ if selected_option == "Commentaires":
     
     #CAH (critère de Ward) 
     
-    cah_hotel = my_cah_from_doc2vec(corpus_liste_hotel_year,Z_hotel)
+    cah_hotel = my_cah_from_doc2vec(corpus_liste_hotel_year,Z_hotel,seuil=number)
     st.write(cah_hotel )
     st.button("Re-run cah")
 

@@ -160,15 +160,15 @@ if selected_option == "Commentaires":
   
         #la matrice des liens
     Z_parc = matrice_lien(corpus_liste_parc_year,words_parc)
-    
+    number = st.number_input("Entrez un seuil :", min_value=5, max_value=200, step=1, format="%d", value=10)
     st.markdown("## le dendrogramme")
     #afficher le dendrogramme
-    my_dendogram(Z_parc)
+    my_dendogram(Z_parc,seuil=number)
     
     
     #CAH (critère de Ward) 
     st.markdown("## Cluster de mots ")
-    cah_parc = my_cah_from_doc2vec(corpus_liste_parc_year,Z_parc)
+    cah_parc = my_cah_from_doc2vec(corpus_liste_parc_year,Z_parc,seuil=number)
     st.write(cah_parc )
     
     
