@@ -8,24 +8,11 @@ Reste à faire:
 
 
 
-2 parties avec bs4 et une avec Selenium
+scrap Selenium:
 
-Bs4
-- tout récupérér
-- à voir en bouclant sur chaque page
-- Plus rapide
-
-Selenium
-- tout récupérer sauf note
-- à voir en bouclant sur chaque page
-- Plus facile à monitorer
 
 Données Stockage :
-Dans bdd -> Pas essayé
-Oracle ou Mysql
--Creer le modèle de données
--Exporter les données format CSV
--Connexion entre python et la BDD pour stocker directement les données sans passer par un csv
+BDD mongo
 
 Type d'analyse :
 WordCloud
