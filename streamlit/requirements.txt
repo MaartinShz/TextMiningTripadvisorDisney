@@ -8,9 +8,6 @@ nltk
 gensim
 scipy
 sklearn
-csv
-os
-re
 requests
 bs4
 numpy
