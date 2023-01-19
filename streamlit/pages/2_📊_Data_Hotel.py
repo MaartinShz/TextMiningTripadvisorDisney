@@ -34,24 +34,18 @@ cursor = con.cursor()
 
 
 #Importer la table 'note':
-query_note = """SELECT* 
-           FROM NOTE
-           """
+query_note = "SELECT * FROM NOTE"
 note = pd.read_sql(query_note, con=con)
 
 
 #Importer la table 'situation':
-query_situation = """SELECT* 
-           FROM SITUATION
-           """
+query_situation = "SELECT * FROM SITUATION"
 situation = pd.read_sql(query_situation, con=con)
 
 
 
 #Importer la table 'datecommentaire':
-query_datecommentaire = """SELECT* 
-           FROM DATECOMMENTAIRE
-           """
+query_datecommentaire = "SELECT * FROM DATECOMMENTAIRE"
 datecommentaire = pd.read_sql(query_datecommentaire, con=con)
 
 
@@ -62,9 +56,7 @@ list_moisannee_commentaire = []
 list_moisannee_commentaire = datecommentaire["MOIS"] + " "+ datecommentaire["ANNÉE"]
 
 #Importer la table 'datesejour':
-query_datesejour = """SELECT* 
-           FROM DATESEJOUR
-           """
+query_datesejour = "SELECT * FROM DATESEJOUR"
 datesejour = pd.read_sql(query_datesejour, con=con)
 
 
@@ -75,18 +67,14 @@ list_moisannee_sejour = datesejour["MOIS"] + " "+ datesejour["ANNÉE"]
 
 
 #Importer la table 'localisation':
-query_localisation = """SELECT* 
-           FROM LOCALISATION
-           """
+query_localisation = "SELECT * FROM LOCALISATION"
 localisation = pd.read_sql(query_localisation, con=con)
 
 
 # # Mise à jour datawarehouse pour les hôtels au cours du temps
 
 #Importer la table 'commentaire_hotel':
-query_commentaire_hotel = """SELECT* 
-           FROM COMMENTAIRE_HOTEL
-           """
+query_commentaire_hotel = "SELECT * FROM COMMENTAIRE_HOTEL"
 commentaire_hotel = pd.read_sql(query_commentaire_hotel, con=con)
 
 
@@ -258,9 +246,7 @@ if len(hotel) > 0:
         st.write("Il y a " + str(len(df_local_new_hotel)) + " nouvelles localisations")
         
         #Importer de nouveau la table 'localisation':
-        query_localisation = """SELECT* 
-           FROM LOCALISATION
-           """
+        query_localisation = "SELECT * FROM LOCALISATION"
         localisation = pd.read_sql(query_localisation, con=con)
         
 else:
