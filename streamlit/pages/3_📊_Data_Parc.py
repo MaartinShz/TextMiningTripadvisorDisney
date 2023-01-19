@@ -34,7 +34,7 @@ con = connect_to_database()
 
 
 #Importer la table 'note':
-query_note = "SELECT* FROM NOTE    "
+query_note = "SELECT * FROM NOTE"
 note = pd.read_sql(query_note, con=con)
 
 
@@ -42,9 +42,7 @@ note = pd.read_sql(query_note, con=con)
 
 
 #Importer la table 'situation':
-query_situation = """SELECT* 
-           FROM SITUATION
-           """
+query_situation = "SELECT * FROM SITUATION"
 situation = pd.read_sql(query_situation, con=con)
 
 
@@ -52,9 +50,7 @@ situation = pd.read_sql(query_situation, con=con)
 
 
 #Importer la table 'datecommentaire':
-query_datecommentaire = """SELECT* 
-           FROM DATECOMMENTAIRE
-           """
+query_datecommentaire = "SELECT * FROM DATECOMMENTAIRE"
 datecommentaire = pd.read_sql(query_datecommentaire, con=con)
 
 
@@ -71,9 +67,7 @@ list_moisannee_commentaire = datecommentaire["MOIS"] + " "+ datecommentaire["ANN
 
 
 #Importer la table 'datesejour':
-query_datesejour = """SELECT* 
-           FROM DATESEJOUR
-           """
+query_datesejour = "SELECT * FROM DATESEJOUR"
 datesejour = pd.read_sql(query_datesejour, con=con)
 
 
@@ -90,9 +84,7 @@ list_moisannee_sejour = datesejour["MOIS"] + " "+ datesejour["ANNÉE"]
 
 
 #Importer la table 'localisation':
-query_localisation = """SELECT* 
-           FROM LOCALISATION
-           """
+query_localisation = "SELECT * FROM LOCALISATION"
 localisation = pd.read_sql(query_localisation, con=con)
 
 
@@ -102,9 +94,7 @@ localisation = pd.read_sql(query_localisation, con=con)
 
 
 #Importer la table 'commentaire_parc':
-query_commentaire_parc = """SELECT* 
-           FROM COMMENTAIRE_PARC
-           """
+query_commentaire_parc = "SELECT * FROM COMMENTAIRE_PARC"
 commentaire_parc = pd.read_sql(query_commentaire_parc, con=con)
 
 
@@ -303,9 +293,7 @@ if len(parc) > 0:
         con.commit()
         
         #Importer de nouveau la table 'localisation':
-        query_localisation = """SELECT* 
-           FROM LOCALISATION
-           """
+        query_localisation = "SELECT * FROM LOCALISATION"
         localisation = pd.read_sql(query_localisation, con=con) 
 else:
     st.write("Il n'y a pas de nouvelle localisation")
