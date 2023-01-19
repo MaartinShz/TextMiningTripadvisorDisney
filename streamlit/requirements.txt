@@ -15,3 +15,5 @@ os
 re
 requests
 bs4
+numpy
+pillow
