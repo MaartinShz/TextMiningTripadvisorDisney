@@ -8,7 +8,7 @@ Created on Wed Dec 21 15:51:05 2022
 import streamlit as st
 import time
 import numpy as np
-import cx_Oracle
+import oracledb
 import pandas as pd
 import csv
 import os
@@ -32,13 +32,9 @@ con = connect_to_database()
 #cursor = con.cursor()
 # # Importer toutes les tables - dimensions
 
-# In[4]:
-
 
 #Importer la table 'note':
-query_note = """SELECT* 
-           FROM NOTE
-           """
+query_note = "SELECT* FROM NOTE    "
 note = pd.read_sql(query_note, con=con)
 
 

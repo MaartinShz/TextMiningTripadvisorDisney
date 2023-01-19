@@ -8,7 +8,7 @@ Created on Wed Dec 21 15:51:05 2022
 import streamlit as st
 import time
 import numpy as np
-import cx_Oracle
+import oracledb
 import pandas as pd
 import csv
 import os

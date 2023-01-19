@@ -160,7 +160,7 @@ if selected_option == "Commentaires":
   
         #la matrice des liens
     Z_parc = matrice_lien(corpus_liste_parc_year,words_parc)
-    number = st.number_input("Entrez un seuil :", min_value=5, max_value=200, step=1, format="%d", value=10)
+    number = st.number_input("Entrez un seuil :", min_value=5, max_value=200, step=1, format="%d", value=15)
     st.markdown("## le dendrogramme")
     #afficher le dendrogramme
     my_dendogram(Z_parc,seuil=number)

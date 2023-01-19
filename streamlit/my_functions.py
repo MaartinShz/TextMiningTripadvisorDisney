@@ -28,23 +28,15 @@ ponctuations = list(string.punctuation)
 #print(ponctuations)
 
 
-# In[5]:
-
 
 #liste des chiffres
 chiffres = list("0123456789")
 #print(chiffres)
 
 
-# In[6]:
-
-
 #outil pour procéder à la lemmatisation:
 
 lem = WordNetLemmatizer()
-
-
-# In[29]:
 
 
 
@@ -62,11 +54,10 @@ for i in liste_mots_vides:
     
 #print(mots_vides)
 
-# In[8]:
-
 
 #fonction pour nettoyage document (chaîne de caractères)
 #le document revient sous la forme d'une liste de tokens
+
 def nettoyage_doc(doc_param):
     #passage en minuscule
     doc = doc_param.lower()
@@ -86,8 +77,6 @@ def nettoyage_doc(doc_param):
     return doc
 
 
-# In[9]:
-
 
 #fonction pour nettoyage corpus
 #attention, optionnellement les documents vides sont éliminés
@@ -95,9 +84,6 @@ def nettoyage_corpus(corpus,vire_vide=True):
     #output
     output = [nettoyage_doc(doc) for doc in corpus if ((len(doc) > 0) or (vire_vide == False))]
     return output
-
-
-# In[10]:
 
 
 #fonction pour transformer un document en vecteur
@@ -128,7 +114,6 @@ def my_doc_2_vec(doc,trained):
     return vec
 
 
-# In[11]:
 
 
 #fonction pour représenter un corpus à partir d'une représentation
@@ -162,10 +147,6 @@ def matrice_lien(corpus,trained):
     
     return Z
 
-
-# In[38]:
-
-
 #dendrogramme avec le seuil
 def my_dendogram(matrice,seuil=10):
     
@@ -173,10 +154,6 @@ def my_dendogram(matrice,seuil=10):
     dendrogram(matrice,orientation='left',color_threshold=seuil)
     st.set_option('deprecation.showPyplotGlobalUse', False)
     st.pyplot()
-
-
-# In[77]:
-
 
 #fonction pour construire une typologie à partir
 #d'une représentation des termes, qu'elle soit entraînée ou pré-entraînée
