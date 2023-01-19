@@ -14,4 +14,4 @@ RUN /usr/local/bin/python -m pip install --upgrade pip
 RUN pip3 install -r requirements.txt
 ENV PYTHONPATH "{PYTHONPATH}:/."
 
-CMD [ "streamlit", "run", "1_🎉_Home.py", "--server.port=8501", "--server.address=0.0.0.0"]
+CMD [ "streamlit", "run", "1_🎉_Home.py", "--server.port=8501","--server.address=0.0.0.0"]
