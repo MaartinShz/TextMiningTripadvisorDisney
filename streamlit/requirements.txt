@@ -2,7 +2,6 @@ streamlit
 oracledb
 pandas
 altair
-urllib
 worldcloud
 unicode
 string
