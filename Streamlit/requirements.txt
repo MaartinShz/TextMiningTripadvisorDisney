@@ -1,0 +1,15 @@
+aiohttp==3.8.3
+beautifulsoup4==4.11.1
+cchardet==2.1.7
+gensim==4.3.0
+matplotlib==3.6.3
+nltk==3.8.1
+numpy==1.24.1
+pandas==1.5.3
+pattern==3.6
+Pillow==9.4.0
+pymongo==4.3.3
+scikit_learn==1.2.0
+scipy==1.10.0
+streamlit==1.17.0
+wordcloud==1.8.2.2

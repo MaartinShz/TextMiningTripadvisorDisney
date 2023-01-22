@@ -1,0 +1,6 @@
+aiohttp==3.8.3
+beautifulsoup4==4.11.1
+cchardet==2.1.7
+numpy==1.24.1
+Pillow==9.4.0
+pymongo==4.3.3

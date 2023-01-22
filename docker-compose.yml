@@ -1,0 +1,51 @@
+version: '3.8'
+services:
+
+  db:
+    container_name: mongodb
+    image: mongo:latest
+    environment:
+      - MONGO_INTIDB_ROOT_USERNAME=root
+      - MONGO_INTIDB_ROOT_PASSWORD=root
+      - MONGO_INIT_DATABASE=disney
+    ports:
+      - "27017:27017"
+    restart: unless-stopped
+    volumes:
+      - ./data:/data_db_disney
+  
+  data:
+    build: ./mongo-seed
+    depends_on:
+      - db
+
+  mongo-express:
+    image: mongo-express:latest
+    environment:
+      - ME_CONFIG_MONGODB_SERVER=mongodb
+      - ME_CONFIG_MONGODB_PORT=27017
+      - ME_CONFIG_BASICAUTH_USERNAME=root
+      - ME_CONFIG_BASICAUTH_PASSWORD=root
+    depends_on:
+      - db
+    ports:
+      - "6082:8081"
+
+
+  web:
+    build: ./Streamlit
+    container_name: streamlit
+    environment:
+      - MONGO_URI=mongodb://db:27017
+    ports:
+      - "8501:8501"
+    depends_on:
+      - db
+    restart: unless-stopped
+
+  maj_database:
+    build: ./maj_db
+    container_name: maj_db
+    restart: unless-stopped
+
+
