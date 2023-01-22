@@ -6,7 +6,7 @@
 
 ## Cloner le repo et créer les containers
 
-<pre><code> git clone https://github.com/PierreDubrulle/scrap.git && cd scrap && docker compose up -d</code></pre>
+<pre><code> git clone https://github.com/MaartinShz/TextMiningTripadvisorDisney.git && cd extMiningTripadvisorDisney && docker compose up -d</code></pre>
 
 ## Services
 <p>Pour chaque service recopier le lien correspondant dans un navigateur</p>
