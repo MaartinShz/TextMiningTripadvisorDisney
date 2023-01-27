@@ -43,9 +43,9 @@ services:
       - db
     restart: unless-stopped
 
-  maj_database:
-    build: ./maj_db
-    container_name: maj_db
-    restart: unless-stopped
+  # maj_database:
+    # build: ./maj_db
+    # container_name: maj_db
+    # restart: unless-stopped
 
 
